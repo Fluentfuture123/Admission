@@ -1,0 +1,378 @@
+/* Global Page Style */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #c9e7ff, #fdfbfb);
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.form-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Decorative Stationery Shapes */
+body::before, body::after {
+  content: "";
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: -1;
+}
+
+body::before {
+  top: -80px;
+  left: -80px;
+  background: #a8d8ff;
+}
+
+body::after {
+  bottom: -80px;
+  right: -80px;
+  background: #ffd6e8;
+}
+
+/* Header */
+.container {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.container h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #2a2a2a;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+}
+
+.container img {
+  width: 130px;
+  margin-top: 10px;
+  border-radius: 18px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  animation: floatLogo 4s ease-in-out infinite, glowPulse 3s ease-in-out infinite;
+  transition: 0.4s ease;
+}
+
+/* Floating animation */
+@keyframes floatLogo {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+/* Glow pulse animation */
+@keyframes glowPulse {
+  0% { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
+  50% { filter: drop-shadow(0 6px 14px rgba(0,150,255,0.4)); }
+  100% { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
+}
+
+/* Hover effect */
+.container img:hover {
+  transform: translateY(-10px) scale(1.08);
+  filter: drop-shadow(0 10px 20px rgba(0,150,255,0.45));
+}
+
+/* Server Warning */
+.server-warning {
+  text-align: center;
+  padding: 15px 20px;
+  background: rgba(255, 200, 100, 0.1);
+  color: #666;
+  font-size: 14px;
+  margin: 10px 20px;
+  border-radius: 8px;
+  border-left: 3px solid #FFA500;
+}
+
+.server-warning a {
+  color: #4CAF50;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.server-warning a:hover {
+  text-decoration: underline;
+}
+
+/* Form Card */
+form {
+  width: 90%;
+  max-width: 600px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  animation: fadeIn 0.6s ease-in-out;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+.form-container h2 {
+  text-align: center;
+  color: #2a2a2a;
+  font-size: 24px;
+  margin-top: 10px;
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Labels */
+label {
+  display: block;
+  margin-top: 20px;
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+/* Inputs */
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background: #fdfdfd;
+  transition: 0.3s ease;
+  font-size: 15px;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+  box-sizing: border-box;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #4CAF50;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+  outline: none;
+}
+
+/* Gender Row */
+.gender-row {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-top: 15px;
+}
+
+.gender-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  background: #f1faff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid #d0eaff;
+  transition: 0.3s ease;
+  margin-top: 0;
+}
+
+.gender-option:hover {
+  background: #dff3ff;
+  transform: translateY(-2px);
+}
+
+.gender-option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #4CAF50;
+  margin: 0;
+}
+
+/* Subjects Box */
+.subjects-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.subject-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fafafa;
+  transition: 0.3s ease;
+  margin-top: 0;
+  font-weight: 500;
+}
+
+.subject-option:hover {
+  background: #f0f0f0;
+  border-color: #4CAF50;
+}
+
+.subject-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #4CAF50;
+  margin: 0;
+}
+
+/* Submit Button */
+.submit-btn {
+  margin-top: 30px;
+  padding: 15px;
+  width: 100%;
+  background: linear-gradient(135deg, #4CAF50, #2f8f3a);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #2f8f3a, #4CAF50);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+.submit-btn:active {
+  transform: translateY(-1px);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 30px;
+  margin-top: 50px;
+  color: #444;
+  font-size: 14px;
+}
+
+.footer-container {
+  margin: 0;
+}
+
+.footer a {
+  color: #4CAF50;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* Utility */
+* {
+  box-sizing: border-box;
+}
+
+/* Responsive Design */
+
+/* Tablet View */
+@media (max-width: 992px) {
+  .form-container {
+    width: 90%;
+  }
+
+  form {
+    padding: 20px;
+  }
+
+  .container h1 {
+    font-size: 26px;
+  }
+}
+
+/* Large Mobile View */
+@media (max-width: 768px) {
+  .form-container {
+    width: 95%;
+  }
+
+  form {
+    padding: 18px;
+  }
+
+  input, select, textarea {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .gender-row {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .subjects-box {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small Mobile View */
+@media (max-width: 480px) {
+  .container h1 {
+    font-size: 20px;
+  }
+
+  .form-container h2 {
+    font-size: 18px;
+  }
+
+  form {
+    padding: 15px;
+  }
+
+  input, select, textarea {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  .gender-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .subject-option {
+    padding: 10px;
+  }
+
+  .submit-btn {
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  body::before, body::after {
+    width: 220px;
+    height: 220px;
+    filter: blur(40px);
+  }
+
+  .container img {
+    width: 100px;
+  }
+}
+
+
+
+
+
