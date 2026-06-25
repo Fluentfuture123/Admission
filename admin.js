@@ -1,4 +1,4 @@
-/* admin.js - Fluent Future Admin Panel (Enhanced PDF/Image with Logo) */
+/* admin.js - Fluent Future Admin Panel (Fixed: Image + Single-Page A4) */
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
 
 function loadLocal() {
@@ -20,7 +20,6 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-/* Format timestamp robustly */
 function formatTimestamp(ts) {
   if (!ts && ts !== 0) return "";
   if (ts instanceof Date && !isNaN(ts)) return ts.toLocaleString("en-US", { hour12: true });
@@ -29,7 +28,6 @@ function formatTimestamp(ts) {
   return String(ts);
 }
 
-/* Normalize subjects for display/export */
 function getSubjectsValue(s) {
   if (!s) return "";
   const raw = s.subjects ?? s.subject ?? "";
@@ -120,8 +118,6 @@ function closeModal() {
   const modal = document.getElementById("detailModal");
   if (modal) modal.style.display = "none";
   currentSubmission = null;
-  const pa = document.getElementById("printArea");
-  if (pa) { pa.innerHTML = ""; pa.style.display = "none"; }
 }
 
 /* Delete single submission */
@@ -170,250 +166,261 @@ function exportCSV() {
 }
 
 /* ============================================================ */
-/*  AMAZING A4 PRINT CONTENT BUILDER (with Logo)                */
+/*  COMPACT SINGLE-PAGE A4 BUILDER (Inline styles = reliable) */
 /* ============================================================ */
-function buildPrintContent(s) {
+function buildA4Content(s) {
   const ts = formatTimestamp(s.timestamp) || "";
   const subjects = getSubjectsValue(s) || "—";
+  const logoSrc = "IMG/logo.jpeg";
 
   return `
-    <div class="print-sheet">
-      <!-- Top Green Bar -->
-      <div class="print-top-bar"></div>
+  <div style="width:210mm; height:297mm; background:#ffffff; font-family:'Segoe UI',Arial,sans-serif; color:#222; position:relative; overflow:hidden; box-sizing:border-box; margin:0; padding:0;">
 
-      <!-- Header with Logo -->
-      <div class="print-header">
-        <div class="print-logo-wrap">
-          <img src="IMG/logo.jpeg" class="print-logo-img"
-            onerror="this.style.display='none'; this.parentNode.querySelector('.print-logo-fallback').style.display='flex';">
-          <div class="print-logo-fallback">FF</div>
+    <!-- Top Green Bar -->
+    <div style="height:5px; background:linear-gradient(90deg,#1b5e20,#2f8f3a,#4CAF50,#2f8f3a,#1b5e20);"></div>
+
+    <!-- Header -->
+    <div style="display:flex; align-items:center; gap:14px; padding:10px 18px; background:linear-gradient(135deg,#f1faff 0%,#ffffff 100%); border-bottom:1.5px solid #e6f4ea;">
+      <div style="width:52px; height:52px; flex-shrink:0; background:#fff; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+        <img src="${logoSrc}" style="width:48px; height:48px; object-fit:contain; display:block;"
+          onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\\'width:48px;height:48px;background:linear-gradient(135deg,#4CAF50,#2f8f3a);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;\\'>FF</div>';">
+      </div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-size:17px; font-weight:800; color:#2f8f3a; letter-spacing:1px; line-height:1.2;">FLUENT FUTURE ACADEMY</div>
+        <div style="font-size:9px; color:#666; font-style:italic; margin-top:1px;">Shaping Minds, Building Futures</div>
+        <div style="font-size:8px; color:#888; margin-top:2px;">📞 +94 768 980 815 &nbsp;|&nbsp; ✉️ fluentfutureacademylk@gmail.com</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#2f8f3a,#4CAF50); color:#fff; padding:7px 12px; border-radius:8px; text-align:center; box-shadow:0 3px 10px rgba(47,143,58,0.3); flex-shrink:0; min-width:110px;">
+        <div style="font-size:7px; text-transform:uppercase; letter-spacing:1.2px; opacity:0.9; font-weight:700;">Admission No</div>
+        <div style="font-size:15px; font-weight:800; margin-top:1px; letter-spacing:0.3px;">${escapeHtml(s.admissionNumber || "")}</div>
+        <div style="font-size:7px; opacity:0.85; margin-top:1px; font-weight:500;">${escapeHtml(ts)}</div>
+      </div>
+    </div>
+
+    <!-- Watermark -->
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-25deg); font-size:64px; font-weight:900; color:rgba(47,143,58,0.035); letter-spacing:6px; pointer-events:none; z-index:0; white-space:nowrap;">FLUENT FUTURE</div>
+
+    <!-- Body -->
+    <div style="padding:8px 18px; position:relative; z-index:1;">
+
+      <!-- Personal -->
+      <div style="margin-bottom:6px; background:#fafbfc; border-radius:7px; border:1px solid #e8ecef; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+        <div style="display:flex; align-items:center; gap:6px; padding:5px 10px; background:linear-gradient(90deg,#e6f4ea,#f1faff); border-bottom:1px solid #d0eaff;">
+          <span style="font-size:13px; line-height:1;">👤</span>
+          <span style="font-size:9px; font-weight:700; color:#2f8f3a; text-transform:uppercase; letter-spacing:1px;">Personal Information</span>
         </div>
-        <div class="print-header-center">
-          <div class="print-academy-name">FLUENT FUTURE ACADEMY</div>
-          <div class="print-tagline">Shaping Minds, Building Futures</div>
-          <div class="print-contact-small">📞 +94 768 980 815 &nbsp;|&nbsp; ✉️ fluentfutureacademylk@gmail.com</div>
-        </div>
-        <div class="print-admission-badge">
-          <div class="print-badge-label">ADMISSION NO</div>
-          <div class="print-badge-value">${escapeHtml(s.admissionNumber || "")}</div>
-          <div class="print-badge-date">${escapeHtml(ts)}</div>
+        <div style="display:grid; grid-template-columns:1.2fr 0.5fr 0.7fr; gap:6px; padding:6px 10px;">
+          <div style="background:#fff; border:1px solid #e0e6ed; border-radius:5px; padding:5px 8px;">
+            <div style="font-size:7px; color:#999; text-transform:uppercase; font-weight:700; margin-bottom:1px; letter-spacing:0.5px;">Full Name</div>
+            <div style="font-size:11px; color:#222; font-weight:700; line-height:1.3;">${escapeHtml(s.name || "—")}</div>
+          </div>
+          <div style="background:#fff; border:1px solid #e0e6ed; border-radius:5px; padding:5px 8px;">
+            <div style="font-size:7px; color:#999; text-transform:uppercase; font-weight:700; margin-bottom:1px; letter-spacing:0.5px;">Age</div>
+            <div style="font-size:11px; color:#222; font-weight:700;">${escapeHtml(s.age || "—")}</div>
+          </div>
+          <div style="background:#fff; border:1px solid #e0e6ed; border-radius:5px; padding:5px 8px;">
+            <div style="font-size:7px; color:#999; text-transform:uppercase; font-weight:700; margin-bottom:1px; letter-spacing:0.5px;">Gender</div>
+            <div style="font-size:11px; color:#222; font-weight:700;">${escapeHtml(s.gender || "—")}</div>
+          </div>
         </div>
       </div>
 
-      <!-- Decorative watermark -->
-      <div class="print-watermark">FLUENT FUTURE</div>
-
-      <!-- Main Body -->
-      <div class="print-body">
-
-        <!-- Personal Info -->
-        <div class="print-section">
-          <div class="print-section-header">
-            <div class="print-section-icon">👤</div>
-            <div class="print-section-title">Personal Information</div>
+      <!-- Contact -->
+      <div style="margin-bottom:6px; background:#fafbfc; border-radius:7px; border:1px solid #e8ecef; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+        <div style="display:flex; align-items:center; gap:6px; padding:5px 10px; background:linear-gradient(90deg,#e6f4ea,#f1faff); border-bottom:1px solid #d0eaff;">
+          <span style="font-size:13px; line-height:1;">📞</span>
+          <span style="font-size:9px; font-weight:700; color:#2f8f3a; text-transform:uppercase; letter-spacing:1px;">Contact Information</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:6px 10px;">
+          <div style="background:#fff; border:1px solid #e0e6ed; border-radius:5px; padding:5px 8px;">
+            <div style="font-size:7px; color:#999; text-transform:uppercase; font-weight:700; margin-bottom:1px; letter-spacing:0.5px;">Email Address</div>
+            <div style="font-size:10px; color:#222; font-weight:600; line-height:1.3; word-break:break-all;">${escapeHtml(s.email || "—")}</div>
           </div>
-          <div class="print-grid-3">
-            <div class="print-field-box">
-              <div class="print-field-label">Full Name</div>
-              <div class="print-field-value">${escapeHtml(s.name || "—")}</div>
-            </div>
-            <div class="print-field-box">
-              <div class="print-field-label">Age</div>
-              <div class="print-field-value">${escapeHtml(s.age || "—")}</div>
-            </div>
-            <div class="print-field-box">
-              <div class="print-field-label">Gender</div>
-              <div class="print-field-value">${escapeHtml(s.gender || "—")}</div>
-            </div>
+          <div style="background:#fff; border:1px solid #e0e6ed; border-radius:5px; padding:5px 8px;">
+            <div style="font-size:7px; color:#999; text-transform:uppercase; font-weight:700; margin-bottom:1px; letter-spacing:0.5px;">Phone Number</div>
+            <div style="font-size:11px; color:#222; font-weight:700;">${escapeHtml(s.phone || "—")}</div>
           </div>
         </div>
-
-        <!-- Contact Info -->
-        <div class="print-section">
-          <div class="print-section-header">
-            <div class="print-section-icon">📞</div>
-            <div class="print-section-title">Contact Information</div>
-          </div>
-          <div class="print-grid-2">
-            <div class="print-field-box">
-              <div class="print-field-label">Email Address</div>
-              <div class="print-field-value">${escapeHtml(s.email || "—")}</div>
-            </div>
-            <div class="print-field-box">
-              <div class="print-field-label">Phone Number</div>
-              <div class="print-field-value">${escapeHtml(s.phone || "—")}</div>
-            </div>
-          </div>
-          <div class="print-field-box full">
-            <div class="print-field-label">School Name</div>
-            <div class="print-field-value">${escapeHtml(s.school || "—")}</div>
+        <div style="padding:0 10px 6px 10px;">
+          <div style="background:#fff; border:1px solid #e0e6ed; border-radius:5px; padding:5px 8px;">
+            <div style="font-size:7px; color:#999; text-transform:uppercase; font-weight:700; margin-bottom:1px; letter-spacing:0.5px;">School Name</div>
+            <div style="font-size:11px; color:#222; font-weight:700;">${escapeHtml(s.school || "—")}</div>
           </div>
         </div>
+      </div>
 
-        <!-- Academic Info -->
-        <div class="print-section">
-          <div class="print-section-header">
-            <div class="print-section-icon">📚</div>
-            <div class="print-section-title">Academic Information</div>
+      <!-- Academic -->
+      <div style="margin-bottom:6px; background:#fafbfc; border-radius:7px; border:1px solid #e8ecef; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+        <div style="display:flex; align-items:center; gap:6px; padding:5px 10px; background:linear-gradient(90deg,#e6f4ea,#f1faff); border-bottom:1px solid #d0eaff;">
+          <span style="font-size:13px; line-height:1;">📚</span>
+          <span style="font-size:9px; font-weight:700; color:#2f8f3a; text-transform:uppercase; letter-spacing:1px;">Academic Information</span>
+        </div>
+        <div style="display:grid; grid-template-columns:0.6fr 1.4fr; gap:6px; padding:6px 10px;">
+          <div style="background:#fff; border:1px solid #e0e6ed; border-radius:5px; padding:5px 8px;">
+            <div style="font-size:7px; color:#999; text-transform:uppercase; font-weight:700; margin-bottom:1px; letter-spacing:0.5px;">Grade</div>
+            <div style="font-size:11px; color:#222; font-weight:700;">${escapeHtml(s.grade || "—")}</div>
           </div>
-          <div class="print-grid-2">
-            <div class="print-field-box">
-              <div class="print-field-label">Grade</div>
-              <div class="print-field-value">${escapeHtml(s.grade || "—")}</div>
-            </div>
-            <div class="print-field-box">
-              <div class="print-field-label">Selected Subjects</div>
-              <div class="print-field-value">${escapeHtml(subjects)}</div>
-            </div>
+          <div style="background:#fff; border:1px solid #e0e6ed; border-radius:5px; padding:5px 8px;">
+            <div style="font-size:7px; color:#999; text-transform:uppercase; font-weight:700; margin-bottom:1px; letter-spacing:0.5px;">Selected Subjects</div>
+            <div style="font-size:10px; color:#222; font-weight:600; line-height:1.3;">${escapeHtml(subjects)}</div>
           </div>
         </div>
+      </div>
 
-        <!-- Comments -->
-        <div class="print-section">
-          <div class="print-section-header">
-            <div class="print-section-icon">📝</div>
-            <div class="print-section-title">Additional Comments</div>
-          </div>
-          <div class="print-comments-box">
+      <!-- Comments -->
+      <div style="margin-bottom:6px; background:#fafbfc; border-radius:7px; border:1px solid #e8ecef; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+        <div style="display:flex; align-items:center; gap:6px; padding:5px 10px; background:linear-gradient(90deg,#e6f4ea,#f1faff); border-bottom:1px solid #d0eaff;">
+          <span style="font-size:13px; line-height:1;">📝</span>
+          <span style="font-size:9px; font-weight:700; color:#2f8f3a; text-transform:uppercase; letter-spacing:1px;">Additional Comments</span>
+        </div>
+        <div style="padding:6px 10px;">
+          <div style="background:#fff; border:1px dashed #c8d6e5; border-radius:5px; padding:6px 8px; min-height:28px; font-size:10px; color:#444; line-height:1.4;">
             ${escapeHtml(s.message || "No additional comments provided.")}
           </div>
         </div>
-
       </div>
 
-      <!-- Footer -->
-      <div class="print-footer">
-        <div class="print-signature-area">
-          <div class="print-signature-box">
-            <div class="print-signature-line"></div>
-            <div class="print-signature-label">Student / Parent Signature</div>
-          </div>
-          <div class="print-signature-box">
-            <div class="print-signature-line"></div>
-            <div class="print-signature-label">Authorized By</div>
-          </div>
-        </div>
-        <div class="print-footer-text">
-          <div>📅 Generated on: ${escapeHtml(ts)}</div>
-          <div>Fluent Future Academy | www.fluentfuture.com | This is a computer generated document.</div>
-        </div>
-      </div>
-
-      <!-- Bottom Green Bar -->
-      <div class="print-bottom-bar"></div>
     </div>
+
+    <!-- Footer / Signature -->
+    <div style="position:absolute; bottom:22px; left:18px; right:18px; z-index:1;">
+      <div style="display:flex; justify-content:space-between; gap:40px; margin-bottom:8px;">
+        <div style="flex:1; text-align:center;">
+          <div style="border-bottom:1.5px solid #444; height:28px;"></div>
+          <div style="font-size:9px; color:#666; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-top:3px;">Student / Parent Signature</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+          <div style="border-bottom:1.5px solid #444; height:28px;"></div>
+          <div style="font-size:9px; color:#666; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-top:3px;">Authorized By</div>
+        </div>
+      </div>
+      <div style="text-align:center; font-size:8px; color:#aaa; line-height:1.5; border-top:1px solid #eee; padding-top:5px;">
+        <div>📅 Generated on: ${escapeHtml(ts)} &nbsp;|&nbsp; Fluent Future Academy &nbsp;|&nbsp; www.fluentfuture.com</div>
+        <div>This is a computer generated document.</div>
+      </div>
+    </div>
+
+    <!-- Bottom Green Bar -->
+    <div style="height:4px; background:linear-gradient(90deg,#1b5e20,#2f8f3a,#4CAF50,#2f8f3a,#1b5e20); position:absolute; bottom:0; left:0; right:0;"></div>
+  </div>
   `;
 }
 
 /* ============================================================ */
-/*  PDF EXPORT (waits for logo image to load)                   */
+/*  CREATE TEMP EXPORT ELEMENT (outside modal, off-screen)      */
+/* ============================================================ */
+function createExportElement(htmlContent) {
+  // Remove any old temp element
+  const old = document.getElementById("__exportTemp");
+  if (old) old.remove();
+
+  const div = document.createElement("div");
+  div.id = "__exportTemp";
+  div.innerHTML = htmlContent;
+
+  // Critical: place off-screen but rendered, NOT inside modal
+  div.style.cssText = `
+    position: fixed;
+    left: -9999px;
+    top: 0;
+    width: 210mm;
+    height: 297mm;
+    overflow: hidden;
+    background: #fff;
+    z-index: 99999;
+    visibility: visible;
+    display: block;
+  `;
+
+  document.body.appendChild(div);
+  return div;
+}
+
+/* Wait for all images inside element to load */
+function waitForImages(element) {
+  const imgs = element.querySelectorAll("img");
+  const promises = Array.from(imgs).map(img => {
+    return new Promise(resolve => {
+      if (img.complete && img.naturalHeight !== 0) {
+        resolve();
+      } else {
+        img.onload = () => resolve();
+        img.onerror = () => resolve();
+        setTimeout(resolve, 1500); // safety
+      }
+    });
+  });
+  return Promise.all(promises);
+}
+
+/* ============================================================ */
+/*  PDF EXPORT (single page A4)                                 */
 /* ============================================================ */
 async function downloadPDF() {
   if (!currentSubmission) return alert("No submission selected.");
 
-  let printArea = document.getElementById("printArea");
-  if (!printArea) {
-    printArea = document.createElement("div");
-    printArea.id = "printArea";
-    document.body.appendChild(printArea);
-  }
-
-  printArea.innerHTML = buildPrintContent(currentSubmission);
-  printArea.style.display = "block";
-  printArea.style.visibility = "visible";
-  printArea.style.position = "relative";
-  printArea.style.background = "#ffffff";
-  printArea.style.width = "210mm";
-  printArea.style.minHeight = "297mm";
-  printArea.style.padding = "0";
-  printArea.style.margin = "0 auto";
-
-  // Wait for all images to load (especially the logo)
-  const images = printArea.querySelectorAll("img");
-  await Promise.all(Array.from(images).map(img => {
-    if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
-    return new Promise((resolve) => {
-      img.onload = resolve;
-      img.onerror = resolve;
-      setTimeout(resolve, 1200); // safety timeout
-    });
-  }));
-
-  // Extra wait for fonts & layout stabilization
-  await new Promise(resolve => setTimeout(resolve, 600));
-
-  const opt = {
-    margin: [4, 4, 4, 4],
-    filename: `admission-${(currentSubmission.admissionNumber || "form")}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2.5, useCORS: true, backgroundColor: "#ffffff", logging: false },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
+  const temp = createExportElement(buildA4Content(currentSubmission));
 
   try {
-    await html2pdf().set(opt).from(printArea).save();
+    await waitForImages(temp);
+    await new Promise(r => setTimeout(r, 400)); // layout settle
+
+    const opt = {
+      margin: 0,
+      filename: `admission-${(currentSubmission.admissionNumber || "form")}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2.2,
+        useCORS: false,
+        backgroundColor: "#ffffff",
+        logging: false,
+        width: 794,
+        height: 1123
+      },
+      jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
+    };
+
+    await html2pdf().set(opt).from(temp).save();
   } catch (err) {
     console.error("PDF export error:", err);
-    alert("PDF export failed. See console for details.");
+    alert("PDF export failed. Check console.");
   } finally {
-    printArea.style.display = "none";
-    printArea.innerHTML = "";
+    temp.remove();
   }
 }
 
 /* ============================================================ */
-/*  IMAGE EXPORT (waits for logo image to load)                 */
+/*  IMAGE EXPORT (PNG, single page A4)                          */
 /* ============================================================ */
 async function downloadImage() {
   if (!currentSubmission) return alert("No submission selected.");
 
-  let printArea = document.getElementById("printArea");
-  if (!printArea) {
-    printArea = document.createElement("div");
-    printArea.id = "printArea";
-    document.body.appendChild(printArea);
-  }
-
-  printArea.innerHTML = buildPrintContent(currentSubmission);
-  printArea.style.display = "block";
-  printArea.style.visibility = "visible";
-  printArea.style.position = "relative";
-  printArea.style.background = "#ffffff";
-  printArea.style.width = "210mm";
-  printArea.style.minHeight = "297mm";
-
-  // Wait for images
-  const images = printArea.querySelectorAll("img");
-  await Promise.all(Array.from(images).map(img => {
-    if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
-    return new Promise((resolve) => {
-      img.onload = resolve;
-      img.onerror = resolve;
-      setTimeout(resolve, 1200);
-    });
-  }));
-
-  await new Promise(resolve => setTimeout(resolve, 600));
+  const temp = createExportElement(buildA4Content(currentSubmission));
 
   try {
-    const canvas = await html2canvas(printArea, {
-      scale: 2.5,
-      useCORS: true,
+    await waitForImages(temp);
+    await new Promise(r => setTimeout(r, 400));
+
+    const canvas = await html2canvas(temp, {
+      scale: 2.2,
+      useCORS: false,
       backgroundColor: "#ffffff",
       logging: false,
-      width: 794,  // 210mm in pixels at 96dpi
-      height: 1123 // 297mm in pixels at 96dpi
+      width: 794,
+      height: 1123
     });
+
     const link = document.createElement("a");
     link.href = canvas.toDataURL("image/png");
     link.download = `admission-${(currentSubmission.admissionNumber || "form")}.png`;
+    document.body.appendChild(link);
     link.click();
+    link.remove();
   } catch (err) {
     console.error("Image export error:", err);
-    alert("Image export failed.");
+    alert("Image export failed. Check console.");
   } finally {
-    printArea.style.display = "none";
-    printArea.innerHTML = "";
+    temp.remove();
   }
 }
 
