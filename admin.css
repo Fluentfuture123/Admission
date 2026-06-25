@@ -1,4 +1,4 @@
-/* admin.css - Fluent Future Admin Panel (Enhanced with Amazing A4 Print Styles) */
+/* admin.css - Fluent Future Admin Panel (Clean UI Styles) */
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family:'Poppins',sans-serif;
@@ -35,7 +35,9 @@ header p { color:#777; font-size:14px; }
   gap:10px;
   margin-bottom:20px;
   flex-wrap:wrap;
+  justify-content:space-between;
 }
+.left-controls, .right-controls { display:flex; gap:10px; flex-wrap:wrap; }
 button {
   padding:10px 18px;
   border:none;
@@ -48,6 +50,7 @@ button {
 .btn-refresh { background:#2196F3; color:#fff; }
 .btn-export { background:#4CAF50; color:#fff; }
 .btn-delete { background:#f44336; color:#fff; }
+button:hover { transform: translateY(-1px); opacity:0.92; }
 
 /* Stats */
 .stats {
@@ -62,6 +65,7 @@ button {
   padding:15px;
   border-radius:8px;
   border-left:4px solid #4CAF50;
+  min-width:140px;
 }
 .stat-number { font-size:22px; font-weight:700; color:#4CAF50; }
 .stat-label { font-size:12px; color:#666; margin-top:5px; }
@@ -90,7 +94,7 @@ button {
   box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
 .submission-id { font-size:16px; font-weight:700; color:#4CAF50; margin-bottom:4px; }
-.submission-meta { font-size:12px; color:#777; display:flex; gap:15px; align-items:center; }
+.submission-meta { font-size:12px; color:#777; display:flex; gap:15px; align-items:center; flex-wrap:wrap; }
 
 /* Actions */
 .submission-actions { display:flex; gap:10px; align-items:center; }
@@ -182,10 +186,12 @@ button {
   font-size:13px;
   font-weight:600;
   cursor:pointer;
+  transition:0.18s ease;
 }
 .btn-pdf { background:#f44336; color:#fff; }
 .btn-image { background:#ff9800; color:#fff; }
 .btn-close { background:#ccc; color:#333; }
+.btn-modal:hover { transform: translateY(-1px); opacity:0.9; }
 
 /* Footer */
 .footer {
@@ -197,345 +203,10 @@ button {
   padding-top:10px;
 }
 
-/* ============================================================ */
-/*  AMAZING A4 PRINT STYLES (PDF & Image Export)              */
-/* ============================================================ */
+/* Print area (hidden, used by old structure - kept minimal) */
+#printArea, .print-area { display:none; }
 
-/* Print area container */
-#printArea, .print-area {
-  width:210mm;
-  min-height:297mm;
-  padding:0;
-  background:transparent;
-  box-sizing:border-box;
-  font-family: 'Segoe UI', 'Poppins', Arial, sans-serif;
-  color:#222;
-  display:block;
-  position:relative;
-}
-
-/* Centered printable sheet */
-.print-sheet {
-  width:210mm;
-  min-height:297mm;
-  margin:0 auto;
-  padding:0;
-  background:#ffffff;
-  box-sizing:border-box;
-  font-family: 'Segoe UI', 'Poppins', Arial, sans-serif;
-  color:#222;
-  position:relative;
-  overflow:hidden;
-  box-shadow: 0 0 30px rgba(0,0,0,0.12);
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-
-/* Top & Bottom green bars */
-.print-top-bar {
-  height: 10px;
-  background: linear-gradient(90deg, #1b5e20, #2f8f3a, #4CAF50, #2f8f3a, #1b5e20);
-}
-.print-bottom-bar {
-  height: 8px;
-  background: linear-gradient(90deg, #1b5e20, #2f8f3a, #4CAF50, #2f8f3a, #1b5e20);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-/* Watermark */
-.print-watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-30deg);
-  font-size: 72px;
-  font-weight: 900;
-  color: rgba(47, 143, 58, 0.04);
-  letter-spacing: 8px;
-  pointer-events: none;
-  z-index: 0;
-  white-space: nowrap;
-}
-
-/* Print Header */
-.print-header {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  padding: 22px 28px;
-  background: linear-gradient(135deg, #f1faff 0%, #ffffff 60%, #f1faff 100%);
-  border-bottom: 2px solid #e6f4ea;
-  position: relative;
-  z-index: 1;
-}
-
-/* Logo */
-.print-logo-wrap {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  flex-shrink: 0;
-}
-.print-logo-img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  border-radius: 14px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-  display: block;
-}
-.print-logo-fallback {
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(135deg, #4CAF50, #2f8f3a);
-  color: #fff;
-  border-radius: 50%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 24px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-  position: absolute;
-  top: 5px;
-  left: 5px;
-}
-
-/* Header Center Text */
-.print-header-center {
-  flex: 1;
-}
-.print-academy-name {
-  font-size: 24px;
-  font-weight: 800;
-  color: #2f8f3a;
-  letter-spacing: 1.5px;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-}
-.print-tagline {
-  font-size: 13px;
-  color: #666;
-  font-style: italic;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-.print-contact-small {
-  font-size: 10px;
-  color: #888;
-  font-weight: 500;
-}
-
-/* Admission Badge */
-.print-admission-badge {
-  background: linear-gradient(135deg, #2f8f3a, #4CAF50);
-  color: #fff;
-  padding: 14px 20px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 6px 18px rgba(47, 143, 58, 0.35);
-  min-width: 130px;
-  position: relative;
-  z-index: 1;
-}
-.print-admission-badge::before {
-  content: "";
-  position: absolute;
-  top: -3px; left: -3px; right: -3px; bottom: -3px;
-  border: 2px dashed rgba(255,255,255,0.4);
-  border-radius: 14px;
-  pointer-events: none;
-}
-.print-badge-label {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  opacity: 0.9;
-  margin-bottom: 5px;
-  font-weight: 700;
-}
-.print-badge-value {
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 5px;
-  letter-spacing: 0.5px;
-}
-.print-badge-date {
-  font-size: 9px;
-  opacity: 0.85;
-  font-weight: 500;
-}
-
-/* Print Body */
-.print-body {
-  padding: 22px 28px;
-  position: relative;
-  z-index: 1;
-}
-
-/* Sections */
-.print-section {
-  margin-bottom: 18px;
-  background: #fafbfc;
-  border-radius: 12px;
-  border: 1px solid #e8ecef;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-}
-.print-section-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  background: linear-gradient(90deg, #e6f4ea, #f1faff);
-  border-bottom: 1px solid #d0eaff;
-}
-.print-section-icon {
-  font-size: 18px;
-  line-height: 1;
-}
-.print-section-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #2f8f3a;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Grids */
-.print-grid-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-  padding: 14px 16px;
-}
-.print-grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding: 14px 16px;
-}
-
-/* Field Boxes */
-.print-field-box {
-  background: #ffffff;
-  border: 1px solid #e0e6ed;
-  border-radius: 10px;
-  padding: 10px 14px;
-  transition: all 0.2s;
-}
-.print-field-box:hover {
-  border-color: #4CAF50;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.08);
-}
-.print-field-box.full {
-  grid-column: 1 / -1;
-  margin: 0 16px 14px 16px;
-}
-.print-field-label {
-  font-size: 9px;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 5px;
-  font-weight: 700;
-}
-.print-field-value {
-  font-size: 14px;
-  color: #222;
-  font-weight: 600;
-  word-break: break-word;
-  line-height: 1.4;
-}
-
-/* Comments Box */
-.print-comments-box {
-  margin: 0 16px 14px 16px;
-  background: #ffffff;
-  border: 1px dashed #c8d6e5;
-  border-radius: 10px;
-  padding: 14px;
-  min-height: 70px;
-  font-size: 13px;
-  color: #444;
-  line-height: 1.6;
-}
-
-/* Footer */
-.print-footer {
-  padding: 0 28px 28px 28px;
-  position: relative;
-  z-index: 1;
-}
-.print-signature-area {
-  display: flex;
-  justify-content: space-between;
-  gap: 50px;
-  margin-bottom: 22px;
-  padding: 0 20px;
-}
-.print-signature-box {
-  flex: 1;
-  text-align: center;
-}
-.print-signature-line {
-  border-bottom: 1.5px solid #444;
-  margin-bottom: 8px;
-  height: 45px;
-}
-.print-signature-label {
-  font-size: 11px;
-  color: #666;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.print-footer-text {
-  text-align: center;
-  font-size: 9px;
-  color: #aaa;
-  line-height: 1.7;
-  padding-top: 14px;
-  border-top: 1px solid #eee;
-}
-
-/* ============================================================ */
-/*  PRINT MEDIA RULES                                           */
-/* ============================================================ */
-@media print {
-  body * { visibility: hidden !important; }
-  #printArea, #printArea * { visibility: visible !important; }
-  #printArea {
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    background: #fff !important;
-    z-index: 99999 !important;
-    overflow: visible !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  .print-sheet {
-    width: 100% !important;
-    min-height: 100vh !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-  }
-  .print-top-bar, .print-bottom-bar {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-}
-
-/* ============================================================ */
-/*  SMALL SCREENS                                             */
-/* ============================================================ */
+/* Small screens */
 @media(max-width:768px){
   header h1{font-size:22px;}
   .modal-content{margin:20px; padding:20px;}
@@ -544,4 +215,6 @@ button {
   .submission-actions{width:100%; margin-top:10px;}
   .controls{flex-direction:column;}
   .controls button{width:100%;}
+  .left-controls, .right-controls { width:100%; }
+  .left-controls button, .right-controls button { width:100%; }
 }
