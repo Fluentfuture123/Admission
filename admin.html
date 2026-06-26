@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fluent Future Admin Panel</title>
 
-  <!-- PDF / Image export libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- Image export library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <link rel="stylesheet" href="admin.css">
@@ -60,13 +59,12 @@
       <div id="detailsContent" class="modal-body"></div>
 
       <div class="modal-footer">
-        <button class="btn-modal btn-pdf" id="btnDownloadPDF">📄 Download PDF (A4)</button>
         <button class="btn-modal btn-image" id="btnDownloadImage">🖼️ Download Image (A4)</button>
         <button class="btn-modal btn-close" id="btnClose">Close</button>
       </div>
     </div>
 
-    <!-- Hidden print area used for PDF/Image generation (kept inside modal to avoid stray content) -->
+    <!-- Hidden print area used for Image generation -->
     <div id="printArea" class="print-area" aria-hidden="true" style="display:none;"></div>
   </div>
 
