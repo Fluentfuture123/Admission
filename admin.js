@@ -24,30 +24,55 @@ function formatTimestamp(ts) {
   
   let date;
   
+  // If already a Date object
   if (ts instanceof Date && !isNaN(ts)) {
     date = ts;
-  } else {
-    const parsed = Date.parse(ts);
-    if (!isNaN(parsed)) {
-      date = new Date(parsed);
-    } else {
-      // Try to parse common formats like "6/27/2026, 2:40:59 AM" or "6/15/2026, 2:40:59 AM"
-      const parts = String(ts).match(/(\d{1,2})\/(\d{1,2})\/(\d{4}),\s*(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)/i);
-      if (parts) {
-        const month = parseInt(parts[1], 10) - 1;
-        const day = parseInt(parts[2], 10);
-        const year = parseInt(parts[3], 10);
-        let hour = parseInt(parts[4], 10);
-        const minute = parseInt(parts[5], 10);
-        const second = parseInt(parts[6], 10);
-        const ampm = parts[7].toUpperCase();
+  } 
+  // Try parsing ISO format or other standard formats first
+  else if (typeof ts === 'string') {
+    const str = String(ts).trim();
+    
+    // Check if it's already in DD/MM/YYYY format — return as-is
+    if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
+      return str;
+    }
+    
+    // Try ISO format (2026-06-27T02:35:00)
+    const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2}):(\d{2})/);
+    if (isoMatch) {
+      date = new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2])-1, parseInt(isoMatch[3]),
+                      parseInt(isoMatch[4]), parseInt(isoMatch[5]), parseInt(isoMatch[6]));
+    }
+    // Try US format: "6/27/2026, 2:40:59 AM" or "6/27/2026, 2:40:59 PM"
+    else {
+      const usMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),\s*(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)/i);
+      if (usMatch) {
+        const month = parseInt(usMatch[1], 10) - 1;
+        const day = parseInt(usMatch[2], 10);
+        const year = parseInt(usMatch[3], 10);
+        let hour = parseInt(usMatch[4], 10);
+        const minute = parseInt(usMatch[5], 10);
+        const second = parseInt(usMatch[6], 10);
+        const ampm = usMatch[7].toUpperCase();
         
         if (ampm === "PM" && hour !== 12) hour += 12;
         if (ampm === "AM" && hour === 12) hour = 0;
         
         date = new Date(year, month, day, hour, minute, second);
-      } else {
-        return String(ts);
+      }
+      // Try simple format: "6/27/2026" without time
+      else {
+        const simpleMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if (simpleMatch) {
+          date = new Date(parseInt(simpleMatch[3]), parseInt(simpleMatch[1])-1, parseInt(simpleMatch[2]));
+        }
+        else {
+          // Last resort: try native Date.parse
+          const parsed = Date.parse(str);
+          if (!isNaN(parsed)) {
+            date = new Date(parsed);
+          }
+        }
       }
     }
   }
@@ -70,6 +95,16 @@ function formatTimestamp(ts) {
   
   return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
 }
+
+function getSubjectsValue(s) {
+  if (!s) return "";
+  const raw = s.subjects ?? s.subject ?? "";
+  if (!raw) return "";
+  if (Array.isArray(raw)) return raw.join(", ");
+  if (typeof raw === "string") return raw;
+  try { return String(raw); } catch (e) { return ""; }
+}
+
 /* ============================================================ */
 /*  RENDER LIST                                               */
 /* ============================================================ */
