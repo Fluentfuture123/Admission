@@ -171,7 +171,7 @@ function exportCSV() {
 }
 
 /* ============================================================ */
-/*  A4 HTML BUILDER (all pixels, no mm — html2canvas safe)    */
+/*  A4 HTML BUILDER — PROFESSIONAL DESIGN                     */
 /* ============================================================ */
 function buildA4HTML(s) {
   const ts = formatTimestamp(s.timestamp) || "";
@@ -182,113 +182,113 @@ function buildA4HTML(s) {
   const fallbackSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234CAF50'/%3E%3Cstop offset='100%25' stop-color='%232f8f3a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='24' cy='24' r='24' fill='url(%23g)'/%3E%3Ctext x='24' y='30' text-anchor='middle' fill='white' font-size='20' font-weight='bold' font-family='Arial'%3EFF%3C/text%3E%3C/svg%3E";
 
   return `
-<div id="a4page" style="width:794px;height:1123px;background:#ffffff;font-family:'Segoe UI',Arial,sans-serif;color:#222;position:relative;overflow:hidden;box-sizing:border-box;margin:0;padding:0;line-height:1.3;">
+<div id="a4page" style="width:794px;height:1123px;background:#f8fafb;font-family:'Segoe UI',Arial,sans-serif;color:#1a202c;position:relative;overflow:hidden;box-sizing:border-box;margin:0;padding:0;line-height:1.4;">
 
-  <!-- Top bar -->
-  <div style="height:4px;background:linear-gradient(90deg,#1b5e20,#2f8f3a,#4CAF50,#2f8f3a,#1b5e20);"></div>
+  <!-- Top accent bar -->
+  <div style="height:6px;background:linear-gradient(90deg,#1b5e20,#2f8f3a,#4CAF50,#2f8f3a,#1b5e20);"></div>
 
   <!-- Header -->
-  <div style="display:flex;align-items:center;gap:12px;padding:10px 20px;background:linear-gradient(135deg,#f1faff,#ffffff);border-bottom:1.5px solid #e6f4ea;">
-    <div style="width:50px;height:50px;flex-shrink:0;background:#fff;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <img src="${logoPath}" style="width:46px;height:46px;object-fit:contain;display:block;"
+  <div style="display:flex;align-items:center;gap:16px;padding:24px 32px;background:#ffffff;border-bottom:2px solid #e2e8f0;">
+    <div style="width:64px;height:64px;flex-shrink:0;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #e2e8f0;">
+      <img src="${logoPath}" style="width:56px;height:56px;object-fit:contain;display:block;"
         onerror="this.src='${fallbackSvg}';this.onerror=null;">
     </div>
     <div style="flex:1;min-width:0;">
-      <div style="font-size:16px;font-weight:800;color:#2f8f3a;letter-spacing:0.8px;line-height:1.1;">FLUENT FUTURE ACADEMY</div>
-      <div style="font-size:8px;color:#666;font-style:italic;margin-top:1px;">Shaping Minds, Building Futures</div>
-      <div style="font-size:7px;color:#888;margin-top:2px;">📞 +94 768 980 815 | ✉️ fluentfutureacademylk@gmail.com</div>
+      <div style="font-size:22px;font-weight:800;color:#1b5e20;letter-spacing:1px;line-height:1.2;">FLUENT FUTURE ACADEMY</div>
+      <div style="font-size:12px;color:#64748b;font-style:italic;margin-top:3px;letter-spacing:0.3px;">Shaping Minds, Building Futures</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px;font-weight:500;">📞 +94 768 980 815 &nbsp;|&nbsp; ✉️ fluentfutureacademylk@gmail.com</div>
     </div>
-    <div style="background:linear-gradient(135deg,#2f8f3a,#4CAF50);color:#fff;padding:6px 10px;border-radius:6px;text-align:center;box-shadow:0 3px 8px rgba(47,143,58,0.25);flex-shrink:0;min-width:100px;">
-      <div style="font-size:7px;text-transform:uppercase;letter-spacing:1px;opacity:0.9;font-weight:700;">Admission No</div>
-      <div style="font-size:14px;font-weight:800;margin-top:1px;letter-spacing:0.3px;">${escapeHtml(s.admissionNumber || "")}</div>
-      <div style="font-size:7px;opacity:0.85;margin-top:1px;font-weight:500;">${escapeHtml(ts)}</div>
+    <div style="background:linear-gradient(135deg,#1b5e20,#2f8f3a);color:#fff;padding:14px 18px;border-radius:10px;text-align:center;box-shadow:0 4px 15px rgba(27,94,32,0.25);flex-shrink:0;min-width:130px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.2px;opacity:0.9;font-weight:700;">Admission No</div>
+      <div style="font-size:18px;font-weight:800;margin-top:3px;letter-spacing:0.5px;">${escapeHtml(s.admissionNumber || "")}</div>
+      <div style="font-size:10px;opacity:0.85;margin-top:3px;font-weight:500;">${escapeHtml(ts)}</div>
     </div>
   </div>
 
   <!-- Watermark -->
-  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-25deg);font-size:60px;font-weight:900;color:rgba(47,143,58,0.03);letter-spacing:5px;pointer-events:none;z-index:0;white-space:nowrap;">FLUENT FUTURE</div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:72px;font-weight:900;color:rgba(27,94,32,0.025);letter-spacing:6px;pointer-events:none;z-index:0;white-space:nowrap;">FLUENT FUTURE</div>
 
   <!-- Body -->
-  <div style="padding:8px 20px;position:relative;z-index:1;">
+  <div style="padding:24px 32px;position:relative;z-index:1;">
 
-    <!-- Personal -->
-    <div style="margin-bottom:5px;background:#fafbfc;border-radius:6px;border:1px solid #e8ecef;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.02);">
-      <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:linear-gradient(90deg,#e6f4ea,#f1faff);border-bottom:1px solid #d0eaff;">
-        <span style="font-size:12px;line-height:1;">👤</span>
-        <span style="font-size:8px;font-weight:700;color:#2f8f3a;text-transform:uppercase;letter-spacing:0.8px;">Personal Information</span>
+    <!-- Personal Information -->
+    <div style="margin-bottom:16px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:linear-gradient(90deg,#f0fdf4,#ffffff);border-bottom:2px solid #bbf7d0;">
+        <span style="font-size:16px;">👤</span>
+        <span style="font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:1px;">Personal Information</span>
       </div>
-      <div style="display:grid;grid-template-columns:1.3fr 0.4fr 0.6fr;gap:5px;padding:5px 10px;">
-        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
-          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">Full Name</div>
-          <div style="font-size:11px;color:#222;font-weight:700;line-height:1.2;">${escapeHtml(s.name || "—")}</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;padding:14px 16px;">
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Full Name</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;line-height:1.3;">${escapeHtml(s.name || "—")}</div>
         </div>
-        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
-          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">Age</div>
-          <div style="font-size:11px;color:#222;font-weight:700;">${escapeHtml(s.age || "—")}</div>
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Age</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;">${escapeHtml(s.age || "—")}</div>
         </div>
-        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
-          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">Gender</div>
-          <div style="font-size:11px;color:#222;font-weight:700;">${escapeHtml(s.gender || "—")}</div>
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Gender</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;">${escapeHtml(s.gender || "—")}</div>
         </div>
       </div>
     </div>
 
-    <!-- Contact -->
-    <div style="margin-bottom:5px;background:#fafbfc;border-radius:6px;border:1px solid #e8ecef;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.02);">
-      <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:linear-gradient(90deg,#e6f4ea,#f1faff);border-bottom:1px solid #d0eaff;">
-        <span style="font-size:12px;line-height:1;">📞</span>
-        <span style="font-size:8px;font-weight:700;color:#2f8f3a;text-transform:uppercase;letter-spacing:0.8px;">Contact Information</span>
+    <!-- Contact Information -->
+    <div style="margin-bottom:16px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:linear-gradient(90deg,#f0fdf4,#ffffff);border-bottom:2px solid #bbf7d0;">
+        <span style="font-size:16px;">📞</span>
+        <span style="font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:1px;">Contact Information</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px 10px;">
-        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
-          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">Email Address</div>
-          <div style="font-size:9px;color:#222;font-weight:600;line-height:1.2;word-break:break-all;">${escapeHtml(s.email || "—")}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px;">
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Email Address</div>
+          <div style="font-size:12px;color:#1a202c;font-weight:600;line-height:1.3;word-break:break-all;">${escapeHtml(s.email || "—")}</div>
         </div>
-        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
-          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">Phone Number</div>
-          <div style="font-size:11px;color:#222;font-weight:700;">${escapeHtml(s.phone || "—")}</div>
-        </div>
-      </div>
-      <div style="padding:0 10px 5px 10px;">
-        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
-          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">School Name</div>
-          <div style="font-size:11px;color:#222;font-weight:700;">${escapeHtml(s.school || "—")}</div>
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Phone Number</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;">${escapeHtml(s.phone || "—")}</div>
         </div>
       </div>
-      <div style="padding:0 10px 5px 10px;">
-        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
-          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">Current Residential Address</div>
-          <div style="font-size:9px;color:#222;font-weight:600;line-height:1.2;">${escapeHtml(s.address || "—")}</div>
+      <div style="padding:0 16px 14px 16px;">
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">School Name</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;">${escapeHtml(s.school || "—")}</div>
         </div>
       </div>
-    </div>
-
-    <!-- Academic -->
-    <div style="margin-bottom:5px;background:#fafbfc;border-radius:6px;border:1px solid #e8ecef;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.02);">
-      <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:linear-gradient(90deg,#e6f4ea,#f1faff);border-bottom:1px solid #d0eaff;">
-        <span style="font-size:12px;line-height:1;">📚</span>
-        <span style="font-size:8px;font-weight:700;color:#2f8f3a;text-transform:uppercase;letter-spacing:0.8px;">Academic Information</span>
-      </div>
-      <div style="display:grid;grid-template-columns:0.5fr 1.5fr;gap:5px;padding:5px 10px;">
-        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
-          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">Grade</div>
-          <div style="font-size:11px;color:#222;font-weight:700;">${escapeHtml(s.grade || "—")}</div>
-        </div>
-        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
-          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">Selected Subjects</div>
-          <div style="font-size:9px;color:#222;font-weight:600;line-height:1.2;">${escapeHtml(subjects)}</div>
+      <div style="padding:0 16px 14px 16px;">
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Current Residential Address</div>
+          <div style="font-size:12px;color:#1a202c;font-weight:600;line-height:1.4;">${escapeHtml(s.address || "—")}</div>
         </div>
       </div>
     </div>
 
-    <!-- Comments -->
-    <div style="margin-bottom:5px;background:#fafbfc;border-radius:6px;border:1px solid #e8ecef;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.02);">
-      <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:linear-gradient(90deg,#e6f4ea,#f1faff);border-bottom:1px solid #d0eaff;">
-        <span style="font-size:12px;line-height:1;">📝</span>
-        <span style="font-size:8px;font-weight:700;color:#2f8f3a;text-transform:uppercase;letter-spacing:0.8px;">Additional Comments</span>
+    <!-- Academic Information -->
+    <div style="margin-bottom:16px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:linear-gradient(90deg,#f0fdf4,#ffffff);border-bottom:2px solid #bbf7d0;">
+        <span style="font-size:16px;">📚</span>
+        <span style="font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:1px;">Academic Information</span>
       </div>
-      <div style="padding:5px 10px;">
-        <div style="background:#fff;border:1px dashed #c8d6e5;border-radius:4px;padding:5px 8px;min-height:24px;font-size:9px;color:#444;line-height:1.3;">
+      <div style="display:grid;grid-template-columns:0.6fr 1.4fr;gap:12px;padding:14px 16px;">
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Grade</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;">${escapeHtml(s.grade || "—")}</div>
+        </div>
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Selected Subjects</div>
+          <div style="font-size:12px;color:#1a202c;font-weight:600;line-height:1.4;">${escapeHtml(subjects)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Comments -->
+    <div style="margin-bottom:16px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:linear-gradient(90deg,#f0fdf4,#ffffff);border-bottom:2px solid #bbf7d0;">
+        <span style="font-size:16px;">📝</span>
+        <span style="font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:1px;">Additional Comments</span>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="background:#f8fafb;border:1px dashed #cbd5e1;border-radius:6px;padding:10px 12px;min-height:40px;font-size:12px;color:#475569;line-height:1.5;">
           ${escapeHtml(s.message || "No additional comments provided.")}
         </div>
       </div>
@@ -296,26 +296,30 @@ function buildA4HTML(s) {
 
   </div>
 
-  <!-- Footer -->
-  <div style="position:absolute;bottom:18px;left:20px;right:20px;z-index:1;">
-    <div style="display:flex;justify-content:space-between;gap:35px;margin-bottom:6px;">
+  <!-- Signature Area -->
+  <div style="position:absolute;bottom:70px;left:32px;right:32px;z-index:1;">
+    <div style="display:flex;justify-content:space-between;gap:40px;">
       <div style="flex:1;text-align:center;">
-        <div style="border-bottom:1.5px solid #444;height:22px;"></div>
-        <div style="font-size:8px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;">Student / Parent Signature</div>
+        <div style="border-bottom:2px solid #334155;height:30px;"></div>
+        <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">Student / Parent Signature</div>
       </div>
       <div style="flex:1;text-align:center;">
-        <div style="border-bottom:1.5px solid #444;height:22px;"></div>
-        <div style="font-size:8px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;">Authorized By</div>
+        <div style="border-bottom:2px solid #334155;height:30px;"></div>
+        <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">Authorized By</div>
       </div>
-    </div>
-    <div style="text-align:center;font-size:7px;color:#aaa;line-height:1.4;border-top:1px solid #eee;padding-top:4px;">
-      <div>📅 Generated on: ${escapeHtml(ts)} | Fluent Future Academy | www.fluentfuture.com</div>
-      <div>This is a computer generated document.</div>
     </div>
   </div>
 
-  <!-- Bottom bar -->
-  <div style="height:3px;background:linear-gradient(90deg,#1b5e20,#2f8f3a,#4CAF50,#2f8f3a,#1b5e20);position:absolute;bottom:0;left:0;right:0;"></div>
+  <!-- Footer -->
+  <div style="position:absolute;bottom:24px;left:32px;right:32px;z-index:1;">
+    <div style="text-align:center;font-size:9px;color:#94a3b8;line-height:1.6;border-top:1px solid #e2e8f0;padding-top:8px;">
+      <div>📅 Generated on: ${escapeHtml(ts)} &nbsp;|&nbsp; Fluent Future Academy &nbsp;|&nbsp; www.fluentfuture.com</div>
+      <div style="margin-top:2px;">This is a computer generated document. No signature required for digital copy.</div>
+    </div>
+  </div>
+
+  <!-- Bottom accent bar -->
+  <div style="height:4px;background:linear-gradient(90deg,#1b5e20,#2f8f3a,#4CAF50,#2f8f3a,#1b5e20);position:absolute;bottom:0;left:0;right:0;"></div>
 </div>
   `;
 }
@@ -330,7 +334,6 @@ function makeExportEl(html) {
   const wrap = document.createElement("div");
   wrap.id = "__exportTemp";
   wrap.innerHTML = html;
-  // Position off-screen but rendered; html2canvas needs it in DOM and visible
   wrap.style.position = "absolute";
   wrap.style.left = "-9999px";
   wrap.style.top = "0";
