@@ -21,21 +21,55 @@ function escapeHtml(str) {
 
 function formatTimestamp(ts) {
   if (!ts && ts !== 0) return "";
-  if (ts instanceof Date && !isNaN(ts)) return ts.toLocaleString("en-US", { hour12: true });
-  const parsed = Date.parse(ts);
-  if (!isNaN(parsed)) return new Date(parsed).toLocaleString("en-US", { hour12: true });
-  return String(ts);
+  
+  let date;
+  
+  if (ts instanceof Date && !isNaN(ts)) {
+    date = ts;
+  } else {
+    const parsed = Date.parse(ts);
+    if (!isNaN(parsed)) {
+      date = new Date(parsed);
+    } else {
+      // Try to parse common formats like "6/27/2026, 2:40:59 AM" or "6/15/2026, 2:40:59 AM"
+      const parts = String(ts).match(/(\d{1,2})\/(\d{1,2})\/(\d{4}),\s*(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)/i);
+      if (parts) {
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        const year = parseInt(parts[3], 10);
+        let hour = parseInt(parts[4], 10);
+        const minute = parseInt(parts[5], 10);
+        const second = parseInt(parts[6], 10);
+        const ampm = parts[7].toUpperCase();
+        
+        if (ampm === "PM" && hour !== 12) hour += 12;
+        if (ampm === "AM" && hour === 12) hour = 0;
+        
+        date = new Date(year, month, day, hour, minute, second);
+      } else {
+        return String(ts);
+      }
+    }
+  }
+  
+  if (!date || isNaN(date)) return String(ts);
+  
+  // Format: DD/MM/YYYY, HH:MM:SS AM/PM
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  hours = String(hours).padStart(2, '0');
+  
+  return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
 }
-
-function getSubjectsValue(s) {
-  if (!s) return "";
-  const raw = s.subjects ?? s.subject ?? "";
-  if (!raw) return "";
-  if (Array.isArray(raw)) return raw.join(", ");
-  if (typeof raw === "string") return raw;
-  try { return String(raw); } catch (e) { return ""; }
-}
-
 /* ============================================================ */
 /*  RENDER LIST                                               */
 /* ============================================================ */
