@@ -1,4 +1,4 @@
-/* admin.js - Fluent Future Admin Panel (Fixed PDF + Image Export) */
+/* admin.js - Fluent Future Admin Panel */
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
 
 function loadLocal() {
@@ -101,9 +101,12 @@ function viewDetails(index) {
   detailsContent.innerHTML = `
     <div class="detail-grid">
       <div class="detail-field"><div class="detail-label">Name</div><div class="detail-value">${escapeHtml(s.name)}</div></div>
+      <div class="detail-field"><div class="detail-label">Age</div><div class="detail-value">${escapeHtml(s.age || "—")}</div></div>
+      <div class="detail-field"><div class="detail-label">Gender</div><div class="detail-value">${escapeHtml(s.gender || "—")}</div></div>
       <div class="detail-field"><div class="detail-label">Email</div><div class="detail-value">${escapeHtml(s.email)}</div></div>
       <div class="detail-field"><div class="detail-label">Phone</div><div class="detail-value">${escapeHtml(s.phone)}</div></div>
       <div class="detail-field"><div class="detail-label">School</div><div class="detail-value">${escapeHtml(s.school)}</div></div>
+      <div class="detail-field full"><div class="detail-label">Current Residential Address</div><div class="detail-value">${escapeHtml(s.address || "—")}</div></div>
       <div class="detail-field"><div class="detail-label">Grade</div><div class="detail-value">${escapeHtml(s.grade)}</div></div>
       <div class="detail-field"><div class="detail-label">Subjects</div><div class="detail-value">${escapeHtml(getSubjectsValue(s) || "-")}</div></div>
       <div class="detail-field"><div class="detail-label">Admission No</div><div class="detail-value">${escapeHtml(s.admissionNumber)}</div></div>
@@ -142,13 +145,16 @@ function clearAll() {
 function exportCSV() {
   const subs = loadLocal();
   if (!subs.length) return alert("No submissions!");
-  const headers = ["Admission No", "Name", "Email", "Phone", "School", "Grade", "Subjects", "Comments", "Timestamp"];
+  const headers = ["Admission No", "Name", "Age", "Gender", "Email", "Phone", "School", "Address", "Grade", "Subjects", "Comments", "Timestamp"];
   const rows = subs.map(s => [
     s.admissionNumber || "",
     s.name || "",
+    s.age || "",
+    s.gender || "",
     s.email || "",
     s.phone || "",
     s.school || "",
+    s.address || "",
     s.grade || "",
     getSubjectsValue(s) || "",
     (s.message || "").replace(/\n/g, " "),
@@ -249,6 +255,12 @@ function buildA4HTML(s) {
           <div style="font-size:11px;color:#222;font-weight:700;">${escapeHtml(s.school || "—")}</div>
         </div>
       </div>
+      <div style="padding:0 10px 5px 10px;">
+        <div style="background:#fff;border:1px solid #e0e6ed;border-radius:4px;padding:4px 8px;">
+          <div style="font-size:7px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:1px;letter-spacing:0.3px;">Current Residential Address</div>
+          <div style="font-size:9px;color:#222;font-weight:600;line-height:1.2;">${escapeHtml(s.address || "—")}</div>
+        </div>
+      </div>
     </div>
 
     <!-- Academic -->
@@ -318,7 +330,7 @@ function makeExportEl(html) {
   const wrap = document.createElement("div");
   wrap.id = "__exportTemp";
   wrap.innerHTML = html;
-  // Position off-screen but rendered; html2pdf needs it in DOM and visible
+  // Position off-screen but rendered; html2canvas needs it in DOM and visible
   wrap.style.position = "absolute";
   wrap.style.left = "-9999px";
   wrap.style.top = "0";
@@ -341,50 +353,6 @@ function waitImages(el) {
       setTimeout(resolve, 1200);
     });
   }));
-}
-
-/* ============================================================ */
-/*  PDF EXPORT                                                  */
-/* ============================================================ */
-async function downloadPDF() {
-  if (!currentSubmission) { alert("No submission selected."); return; }
-  console.log("[PDF] Starting export...");
-
-  const el = makeExportEl(buildA4HTML(currentSubmission));
-
-  try {
-    await waitImages(el);
-    await new Promise(r => setTimeout(r, 500));
-    console.log("[PDF] Images ready, generating...");
-
-    const opt = {
-      margin: 0,
-      filename: `admission-${(currentSubmission.admissionNumber || "form")}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: false,
-        backgroundColor: "#ffffff",
-        logging: false,
-        width: 794,
-        height: 1123
-      },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait'
-      }
-    };
-
-    await html2pdf().set(opt).from(el.firstElementChild).save();
-    console.log("[PDF] Saved successfully!");
-  } catch (err) {
-    console.error("[PDF] Error:", err);
-    alert("PDF export failed.\\nError: " + (err.message || err));
-  } finally {
-    el.remove();
-    console.log("[PDF] Cleanup done.");
-  }
 }
 
 /* ============================================================ */
@@ -443,9 +411,12 @@ function fetchAndMerge() {
           local.push({
             admissionNumber: admissionNumber,
             name: raw.Name || raw.name || "",
+            age: raw.Age || raw.age || "",
+            gender: raw.Gender || raw.gender || "",
             email: raw.Email || raw.email || "",
             phone: raw.Phone || raw.phone || "",
             school: raw.School || raw.school || "",
+            address: raw.Address || raw.address || "",
             grade: raw.Grade || raw.grade || "",
             subjects: raw.Subjects || raw.subjects || raw.Subject || raw.subject || "",
             message: raw.Message || raw.message || "",
@@ -476,8 +447,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
   const btnClose = document.getElementById("btnClose");
   if (btnClose) btnClose.addEventListener("click", closeModal);
-  const btnPDF = document.getElementById("btnDownloadPDF");
-  if (btnPDF) btnPDF.addEventListener("click", downloadPDF);
   const btnImage = document.getElementById("btnDownloadImage");
   if (btnImage) btnImage.addEventListener("click", downloadImage);
 
