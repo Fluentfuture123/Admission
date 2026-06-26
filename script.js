@@ -1,4 +1,6 @@
 // ADMISSION NUMBER SYSTEM
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
+
 function getLastAdmissionNumber() {
   const raw = localStorage.getItem("lastAdmissionNumber");
   return raw ? parseInt(raw, 10) : 1000;
@@ -6,6 +8,24 @@ function getLastAdmissionNumber() {
 
 function saveAdmissionNumber(num) {
   localStorage.setItem("lastAdmissionNumber", num);
+}
+
+async function fetchMaxAdmissionNumber() {
+  try {
+    const response = await fetch(WEB_APP_URL);
+    const data = await response.json();
+    if (Array.isArray(data) && data.length > 0) {
+      const nums = data.map(row => {
+        const num = row.AdmissionNumber || row.admissionNumber || row["Admission No"] || "";
+        const match = String(num).match(/FF-(\d+)/);
+        return match ? parseInt(match[1], 10) : 0;
+      }).filter(n => n > 0);
+      return nums.length ? Math.max(...nums) : 1000;
+    }
+  } catch (e) {
+    console.warn("Failed to fetch global admission numbers:", e);
+  }
+  return getLastAdmissionNumber();
 }
 
 // Store submission data locally
@@ -23,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  form.addEventListener("submit", function (event) {
+  form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     // Get form values
@@ -33,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const age = document.getElementById("age").value.trim();
     const genderInput = document.querySelector('input[name="gender"]:checked');
     const gender = genderInput ? genderInput.value : "";
+    const address = document.getElementById("address").value.trim();
 
     // Validate required fields
     if (!name || !email || !phone || !age || !gender) {
@@ -49,8 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const grade = document.getElementById("grade").value;
     const message = document.getElementById("message").value.trim();
 
-    // Generate admission number
-    const last = getLastAdmissionNumber();
+    // Generate admission number (globally unique)
+    const last = await fetchMaxAdmissionNumber();
     const newNumber = last + 1;
     saveAdmissionNumber(newNumber);
     const admissionNumber = `FF-${newNumber}`;
@@ -63,6 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
       email: email,
       phone: phone,
       school: school,
+      address: address,
       subjects: subjects,
       grade: grade,
       message: message,
@@ -79,8 +101,6 @@ document.addEventListener("DOMContentLoaded", function () {
       formData.append(key, formDataObj[key]);
     }
 
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
-
     fetch(WEB_APP_URL, {
       method: "POST",
       body: formData,
@@ -93,4 +113,3 @@ document.addEventListener("DOMContentLoaded", function () {
     window.location.href = "thanks.html?id=" + encodeURIComponent(admissionNumber);
   });
 });
-
