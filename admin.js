@@ -106,20 +106,47 @@ function getSubjectsValue(s) {
 }
 
 /* ============================================================ */
+/*  SEARCH / FILTER                                             */
+/* ============================================================ */
+function filterSubmissions() {
+  const query = document.getElementById("searchInput").value.trim().toLowerCase();
+  if (!query) {
+    renderSubmissions();
+    return;
+  }
+  const subs = loadLocal();
+  const filtered = subs.filter(s => {
+    const name = (s.name || "").toLowerCase();
+    const admission = (s.admissionNumber || "").toLowerCase();
+    return name.includes(query) || admission.includes(query);
+  });
+  renderSubmissions(filtered);
+}
+
+function clearSearch() {
+  const input = document.getElementById("searchInput");
+  if (input) {
+    input.value = "";
+    renderSubmissions();
+  }
+}
+
+/* ============================================================ */
 /*  RENDER LIST                                               */
 /* ============================================================ */
-function renderSubmissions() {
-  const subs = loadLocal();
+function renderSubmissions(filteredSubs = null) {
+  const allSubs = loadLocal();
+  const subs = filteredSubs != null ? filteredSubs : allSubs;
   const list = document.getElementById("submissionsList");
   const totalCountEl = document.getElementById("totalCount");
   const lastIdEl = document.getElementById("lastId");
 
-  if (totalCountEl) totalCountEl.textContent = subs.length;
-  if (lastIdEl) lastIdEl.textContent = subs.length ? subs[subs.length - 1].admissionNumber : "-";
+  if (totalCountEl) totalCountEl.textContent = allSubs.length;
+  if (lastIdEl) lastIdEl.textContent = allSubs.length ? allSubs[allSubs.length - 1].admissionNumber : "-";
   if (!list) return;
 
   if (!subs.length) {
-    list.innerHTML = '<div class="no-submissions">No submissions yet</div>';
+    list.innerHTML = '<div class="no-submissions">' + (filteredSubs != null ? 'No matching submissions found' : 'No submissions yet') + '</div>';
     return;
   }
 
@@ -171,6 +198,7 @@ function viewDetails(index) {
     <div class="detail-grid">
       <div class="detail-field"><div class="detail-label">Name</div><div class="detail-value">${escapeHtml(s.name)}</div></div>
       <div class="detail-field"><div class="detail-label">Age</div><div class="detail-value">${escapeHtml(s.age || "—")}</div></div>
+      <div class="detail-field"><div class="detail-label">Date of Birth</div><div class="detail-value">${escapeHtml(s.dob || "—")}</div></div>
       <div class="detail-field"><div class="detail-label">Gender</div><div class="detail-value">${escapeHtml(s.gender || "—")}</div></div>
       <div class="detail-field"><div class="detail-label">Email</div><div class="detail-value">${escapeHtml(s.email)}</div></div>
       <div class="detail-field"><div class="detail-label">Phone</div><div class="detail-value">${escapeHtml(s.phone)}</div></div>
@@ -214,11 +242,12 @@ function clearAll() {
 function exportCSV() {
   const subs = loadLocal();
   if (!subs.length) return alert("No submissions!");
-  const headers = ["Admission No", "Name", "Age", "Gender", "Email", "Phone", "School", "Address", "Grade", "Subjects", "Comments", "Timestamp"];
+  const headers = ["Admission No", "Name", "Age", "DOB", "Gender", "Email", "Phone", "School", "Address", "Grade", "Subjects", "Comments", "Timestamp"];
   const rows = subs.map(s => [
     s.admissionNumber || "",
     s.name || "",
     s.age || "",
+    s.dob || "",
     s.gender || "",
     s.email || "",
     s.phone || "",
@@ -285,7 +314,7 @@ function buildA4HTML(s) {
         <span style="font-size:16px;">👤</span>
         <span style="font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:1px;">Personal Information</span>
       </div>
-      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;padding:14px 16px;">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:12px;padding:14px 16px;">
         <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
           <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Full Name</div>
           <div style="font-size:14px;color:#1a202c;font-weight:700;line-height:1.3;">${escapeHtml(s.name || "—")}</div>
@@ -293,6 +322,10 @@ function buildA4HTML(s) {
         <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
           <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Age</div>
           <div style="font-size:14px;color:#1a202c;font-weight:700;">${escapeHtml(s.age || "—")}</div>
+        </div>
+        <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
+          <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Date of Birth</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;">${escapeHtml(s.dob || "—")}</div>
         </div>
         <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
           <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Gender</div>
@@ -482,6 +515,7 @@ function fetchAndMerge() {
             admissionNumber: admissionNumber,
             name: raw.Name || raw.name || "",
             age: raw.Age || raw.age || "",
+            dob: raw.DOB || raw.dob || "",
             gender: raw.Gender || raw.gender || "",
             email: raw.Email || raw.email || "",
             phone: raw.Phone || raw.phone || "",
@@ -521,6 +555,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const btnImage = document.getElementById("btnDownloadImage");
   if (btnImage) btnImage.addEventListener("click", downloadImage);
+
+  const searchInput = document.getElementById("searchInput");
+  const btnClearSearch = document.getElementById("btnClearSearch");
+  if (searchInput) searchInput.addEventListener("input", filterSubmissions);
+  if (btnClearSearch) btnClearSearch.addEventListener("click", clearSearch);
 
   renderSubmissions();
   fetchAndMerge();
