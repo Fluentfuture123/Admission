@@ -29,7 +29,38 @@
       <input type="number" id="age" name="age" placeholder="Select age" required>
 
       <label for="dob">Date of Birth:</label>
-      <input type="date" id="dob" name="dob" required>
+      <div class="dob-wrapper">
+        <input type="text" id="dob" name="dob" placeholder="dd-mm-yyyy" readonly required>
+        <span class="dob-icon">📅</span>
+        <div class="custom-calendar" id="customCalendar">
+          <div class="cal-header">
+            <button type="button" class="cal-nav" id="calPrev">‹</button>
+            <div class="cal-title">
+              <div class="cal-select-wrapper">
+                <button type="button" class="cal-select-btn" id="calMonthBtn">June</button>
+                <div class="cal-dropdown" id="calMonthDropdown">
+                  <div class="cal-dropdown-scroll" id="calMonthOptions"></div>
+                </div>
+              </div>
+              <div class="cal-select-wrapper">
+                <button type="button" class="cal-select-btn" id="calYearBtn">2026</button>
+                <div class="cal-dropdown" id="calYearDropdown">
+                  <div class="cal-dropdown-scroll" id="calYearOptions"></div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="cal-nav" id="calNext">›</button>
+          </div>
+          <div class="cal-weekdays">
+            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+          </div>
+          <div class="cal-days" id="calDays"></div>
+          <div class="cal-footer">
+            <button type="button" class="cal-btn cal-clear" id="calClear">Clear</button>
+            <button type="button" class="cal-btn cal-today" id="calToday">Today</button>
+          </div>
+        </div>
+      </div>
 
       <div class="gender-row">
         <label>Gender:</label>
