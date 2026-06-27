@@ -240,14 +240,13 @@ function exportCSV() {
 }
 
 /* ============================================================ */
-/*  A4 HTML BUILDER — PROFESSIONAL DESIGN                     */
+/*  A4 HTML BUILDER — ALL FIELDS BOLD (700)                    */
 /* ============================================================ */
 function buildA4HTML(s) {
   const ts = formatTimestamp(s.timestamp) || "";
   const subjects = getSubjectsValue(s) || "—";
   const logoPath = "IMG/logo.jpeg";
 
-  // Simple green circle SVG as data URI for reliable fallback
   const fallbackSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234CAF50'/%3E%3Cstop offset='100%25' stop-color='%232f8f3a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='24' cy='24' r='24' fill='url(%23g)'/%3E%3Ctext x='24' y='30' text-anchor='middle' fill='white' font-size='20' font-weight='bold' font-family='Arial'%3EFF%3C/text%3E%3C/svg%3E";
 
   return `
@@ -311,7 +310,7 @@ function buildA4HTML(s) {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px;">
         <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
           <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Email Address</div>
-          <div style="font-size:12px;color:#1a202c;font-weight:600;line-height:1.3;word-break:break-all;">${escapeHtml(s.email || "—")}</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;line-height:1.3;word-break:break-all;">${escapeHtml(s.email || "—")}</div>
         </div>
         <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
           <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Phone Number</div>
@@ -327,7 +326,7 @@ function buildA4HTML(s) {
       <div style="padding:0 16px 14px 16px;">
         <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
           <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Current Residential Address</div>
-          <div style="font-size:12px;color:#1a202c;font-weight:600;line-height:1.4;">${escapeHtml(s.address || "—")}</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;line-height:1.4;">${escapeHtml(s.address || "—")}</div>
         </div>
       </div>
     </div>
@@ -345,7 +344,7 @@ function buildA4HTML(s) {
         </div>
         <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
           <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Selected Subjects</div>
-          <div style="font-size:12px;color:#1a202c;font-weight:600;line-height:1.4;">${escapeHtml(subjects)}</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;line-height:1.4;">${escapeHtml(subjects)}</div>
         </div>
       </div>
     </div>
@@ -357,7 +356,7 @@ function buildA4HTML(s) {
         <span style="font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:1px;">Additional Comments</span>
       </div>
       <div style="padding:14px 16px;">
-        <div style="background:#f8fafb;border:1px dashed #cbd5e1;border-radius:6px;padding:10px 12px;min-height:40px;font-size:12px;color:#475569;line-height:1.5;">
+        <div style="background:#f8fafb;border:1px dashed #cbd5e1;border-radius:6px;padding:10px 12px;min-height:40px;font-size:14px;color:#1a202c;font-weight:700;line-height:1.5;">
           ${escapeHtml(s.message || "No additional comments provided.")}
         </div>
       </div>
@@ -392,7 +391,6 @@ function buildA4HTML(s) {
 </div>
   `;
 }
-
 /* ============================================================ */
 /*  EXPORT HELPER — create visible off-screen element           */
 /* ============================================================ */
