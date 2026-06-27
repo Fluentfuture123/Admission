@@ -150,10 +150,12 @@ function renderSubmissions(filteredSubs = null) {
     return;
   }
 
-  list.innerHTML = subs.map((s, i) => {
+  list.innerHTML = subs.map((s) => {
+    // FIX: Find original index in full array (allSubs), not filtered index
+    const originalIndex = allSubs.findIndex(x => x.admissionNumber === s.admissionNumber);
     const ts = formatTimestamp(s.timestamp) || "Unknown";
     return `
-      <div class="submission-item" data-index="${i}">
+      <div class="submission-item" data-index="${originalIndex}">
         <div>
           <div class="submission-id">${escapeHtml(s.admissionNumber || "N/A")}</div>
           <div class="submission-meta">
@@ -163,8 +165,8 @@ function renderSubmissions(filteredSubs = null) {
           </div>
         </div>
         <div class="submission-actions">
-          <button class="btn-view" data-index="${i}">👁️ View</button>
-          <button class="btn-delete-single" data-index="${i}">🗑️ Delete</button>
+          <button class="btn-view" data-index="${originalIndex}">👁️ View</button>
+          <button class="btn-delete-single" data-index="${originalIndex}">🗑️ Delete</button>
         </div>
       </div>
     `;
@@ -179,6 +181,7 @@ function renderSubmissions(filteredSubs = null) {
     btn.addEventListener("click", onDeleteClick);
   });
 }
+
 function onViewClick(e) { const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10); viewDetails(idx); }
 function onDeleteClick(e) { const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10); deleteSubmission(idx); }
 
