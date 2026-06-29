@@ -1,5 +1,6 @@
 /* ============================================ */
 /* FLUENT FUTURE - 3D LOGIN PAGE              */
+/* Mobile Responsive Fixed Version            */
 /* ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -60,15 +61,21 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
   background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
   color: var(--text-primary);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
   transition: background 0.5s ease;
   -webkit-tap-highlight-color: transparent;
@@ -535,6 +542,8 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-top: -4px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .remember-checkbox {
@@ -647,6 +656,7 @@ body {
   gap: 10px;
   margin-top: 8px;
   transform-style: preserve-3d;
+  min-height: 52px;
 }
 
 .login-btn::before {
@@ -894,6 +904,8 @@ body {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   font-weight: 500;
   font-size: 14px;
+  max-width: 90vw;
+  text-align: center;
 }
 
 .toast.show {
@@ -903,87 +915,492 @@ body {
 
 .toast-icon {
   font-size: 20px;
+  flex-shrink: 0;
 }
 
 /* ============================================ */
-/* RESPONSIVE DESIGN                            */
+/* RESPONSIVE DESIGN - TABLET & MOBILE          */
 /* ============================================ */
 
-@media (max-width: 480px) {
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
   .login-container {
+    max-width: 420px;
     padding: 16px;
   }
 
   .card-face {
-    padding: 28px 20px;
+    padding: 32px 28px;
+    border-radius: 22px;
+  }
+
+  .logo-3d {
+    width: 85px;
+    height: 85px;
+  }
+
+  .logo-ring-1 { width: 105px; height: 105px; }
+  .logo-ring-2 { width: 125px; height: 125px; }
+  .logo-ring-3 { width: 145px; height: 145px; }
+
+  .logo-inner {
+    width: 68px;
+    height: 68px;
+    border-radius: 16px;
+  }
+
+  .logo-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+  }
+
+  .logo-text h1 {
+    font-size: 24px;
+  }
+
+  .sticker {
+    opacity: 0.1;
+    font-size: 26px;
+  }
+
+  .theme-toggle {
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+}
+
+/* Large Phone (640px and below) */
+@media (max-width: 640px) {
+  .login-container {
+    max-width: 100%;
+    padding: 14px;
+  }
+
+  .card-face {
+    padding: 28px 22px;
     border-radius: 20px;
   }
 
   .logo-3d {
-    width: 80px;
-    height: 80px;
+    width: 75px;
+    height: 75px;
+    margin-bottom: 16px;
   }
 
+  .logo-ring-1 { width: 95px; height: 95px; }
+  .logo-ring-2 { width: 110px; height: 110px; }
+  .logo-ring-3 { width: 125px; height: 125px; }
+
   .logo-inner {
-    width: 64px;
-    height: 64px;
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
   }
 
   .logo-img {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
   }
 
   .logo-text h1 {
     font-size: 22px;
   }
 
+  .logo-text p {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+
+  .login-form {
+    gap: 16px;
+  }
+
   .input-group input {
     padding: 14px 14px 14px 44px;
     font-size: 16px; /* Prevent iOS zoom */
+    border-radius: 12px;
+  }
+
+  .input-group label {
+    left: 44px;
+    font-size: 14px;
+  }
+
+  .input-icon {
+    left: 14px;
+    font-size: 16px;
   }
 
   .login-btn {
     padding: 14px 20px;
     font-size: 15px;
-  }
-
-  .sticker {
-    display: none; /* Hide stickers on small mobile */
-  }
-
-  .theme-toggle {
-    top: 16px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
+    min-height: 48px;
+    border-radius: 12px;
   }
 
   .remember-row {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .remember-text {
+    font-size: 12px;
+  }
+
+  .forgot-link {
+    font-size: 12px;
+  }
+
+  .security-badge {
+    padding: 10px;
+    font-size: 11px;
+    margin-top: 20px;
+  }
+
+  .sticker {
+    display: none;
+  }
+
+  .float-element {
+    display: none;
+  }
+
+  .success-circle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .success-ring:nth-child(1) { width: 80px; height: 80px; }
+  .success-ring:nth-child(2) { width: 105px; height: 105px; }
+  .success-ring:nth-child(3) { width: 130px; height: 130px; }
+
+  .success-check {
+    font-size: 36px;
+  }
+
+  .success-animation h2 {
+    font-size: 20px;
+  }
+
+  .success-animation p {
+    font-size: 13px;
+  }
+
+  .loading-bar {
+    width: 160px;
+  }
+
+  .toast {
+    padding: 12px 18px;
+    font-size: 13px;
+    bottom: 20px;
   }
 }
 
-@media (max-width: 360px) {
+/* Small Phone (480px and below) */
+@media (max-width: 480px) {
+  body {
+    align-items: flex-start;
+    padding-top: 60px;
+    padding-bottom: 20px;
+  }
+
+  .login-container {
+    padding: 12px;
+  }
+
   .card-face {
-    padding: 24px 16px;
+    padding: 24px 18px;
+    border-radius: 18px;
+  }
+
+  .logo-3d {
+    width: 65px;
+    height: 65px;
+    margin-bottom: 14px;
+  }
+
+  .logo-ring-1 { width: 82px; height: 82px; }
+  .logo-ring-2 { width: 95px; height: 95px; }
+  .logo-ring-3 { width: 108px; height: 108px; }
+
+  .logo-inner {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+  }
+
+  .logo-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
   }
 
   .logo-text h1 {
     font-size: 20px;
   }
 
+  .logo-text p {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .login-form {
+    gap: 14px;
+  }
+
   .input-group input {
-    padding: 12px 12px 12px 40px;
+    padding: 13px 13px 13px 42px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  .input-group label {
+    left: 42px;
+    font-size: 14px;
   }
 
   .input-icon {
+    left: 13px;
     font-size: 16px;
-    left: 14px;
   }
+
+  .toggle-password {
+    right: 10px;
+    padding: 6px;
+  }
+
+  .eye-icon {
+    font-size: 16px;
+  }
+
+  .login-btn {
+    padding: 13px 18px;
+    font-size: 15px;
+    min-height: 46px;
+    border-radius: 12px;
+    gap: 8px;
+  }
+
+  .remember-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .security-badge {
+    margin-top: 18px;
+    padding: 10px 8px;
+  }
+
+  .theme-toggle {
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .success-circle {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 18px;
+  }
+
+  .success-ring:nth-child(1) { width: 70px; height: 70px; }
+  .success-ring:nth-child(2) { width: 90px; height: 90px; }
+  .success-ring:nth-child(3) { width: 110px; height: 110px; }
+
+  .success-check {
+    font-size: 32px;
+  }
+
+  .success-animation h2 {
+    font-size: 18px;
+  }
+
+  .success-animation p {
+    font-size: 12px;
+  }
+
+  .loading-bar {
+    width: 140px;
+    margin-top: 18px;
+  }
+}
+
+/* Very Small Phone (360px and below) */
+@media (max-width: 360px) {
+  body {
+    padding-top: 50px;
+  }
+
+  .login-container {
+    padding: 10px;
+  }
+
+  .card-face {
+    padding: 20px 14px;
+    border-radius: 16px;
+  }
+
+  .logo-3d {
+    width: 55px;
+    height: 55px;
+    margin-bottom: 12px;
+  }
+
+  .logo-ring-1 { width: 70px; height: 70px; }
+  .logo-ring-2 { width: 82px; height: 82px; }
+  .logo-ring-3 { width: 94px; height: 94px; }
+
+  .logo-inner {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+  }
+
+  .logo-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+  }
+
+  .logo-text h1 {
+    font-size: 18px;
+  }
+
+  .logo-text p {
+    font-size: 10px;
+  }
+
+  .login-form {
+    gap: 12px;
+  }
+
+  .input-group input {
+    padding: 12px 12px 12px 38px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+
+  .input-group label {
+    left: 38px;
+    font-size: 13px;
+  }
+
+  .input-icon {
+    left: 12px;
+    font-size: 14px;
+  }
+
+  .toggle-password {
+    right: 8px;
+  }
+
+  .eye-icon {
+    font-size: 14px;
+  }
+
+  .login-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+    min-height: 44px;
+    border-radius: 10px;
+  }
+
+  .remember-text {
+    font-size: 11px;
+  }
+
+  .forgot-link {
+    font-size: 11px;
+  }
+
+  .security-badge {
+    padding: 8px;
+    font-size: 10px;
+    margin-top: 14px;
+  }
+
+  .success-circle {
+    width: 60px;
+    height: 60px;
+  }
+
+  .success-ring:nth-child(1) { width: 60px; height: 60px; }
+  .success-ring:nth-child(2) { width: 78px; height: 78px; }
+  .success-ring:nth-child(3) { width: 96px; height: 96px; }
+
+  .success-check {
+    font-size: 28px;
+  }
+
+  .success-animation h2 {
+    font-size: 16px;
+  }
+
+  .success-animation p {
+    font-size: 11px;
+  }
+
+  .loading-bar {
+    width: 120px;
+  }
+}
+
+/* ============================================ */
+/* FOOTER                                      */
+/* ============================================ */
+
+.admin-footer {
+  margin-top: 32px;
+  text-align: center;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.footer-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.footer-icon {
+  font-size: 14px;
+}
+
+.footer-divider {
+  color: #cbd5e1;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.footer-brand {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 /* ============================================ */
