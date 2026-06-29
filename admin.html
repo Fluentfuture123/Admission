@@ -7,6 +7,31 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="stylesheet" href="admin.css">
   <link rel="icon" type="image/png" href="IMG/logo.jpeg">
+
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" type="image/png" href="IMG/logo.jpeg">
+  
+  <!-- LOGIN PROTECTION -->
+  <script>
+    (function() {
+      var SESSION_KEY = "ff_admin_session";
+      var isLoggedIn = function() {
+        try {
+          var data = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
+          if (!data) return false;
+          var s = JSON.parse(data);
+          return new Date() <= new Date(s.expiresAt);
+        } catch(e) { return false; }
+      };
+      if (!isLoggedIn()) {
+        window.location.replace("Naz235.html");
+        document.documentElement.innerHTML = '<meta http-equiv="refresh" content="0; url=Naz235.html">';
+        return;
+      }
+    })();
+  </script>
+  <noscript><meta http-equiv="refresh" content="0; url=Naz235.html"></noscript>
+  
 <base target="_blank">
 </head>
 <body>
@@ -60,13 +85,16 @@
           <span class="btn-text">Export CSV</span>
         </button>
       </div>
-      <div class="controls-right">
+           <div class="controls-right">
+        <button class="btn-control btn-danger" id="btnLogout">
+          <span class="btn-icon">🚪</span>
+          <span class="btn-text">Logout</span>
+        </button>
         <button class="btn-control btn-danger" id="btnClearAll">
           <span class="btn-icon">🗑️</span>
           <span class="btn-text">Clear All</span>
         </button>
       </div>
-    </div>
 
     <!-- Search Bar -->
     <div class="search-bar-wrapper">
