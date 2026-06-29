@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fluent Future Admin Panel</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" type="image/png" href="IMG/logo.jpeg">
+</head>
+<body>
+  <!-- Background decoration -->
+  <div class="bg-decoration bg-orb-1"></div>
+  <div class="bg-decoration bg-orb-2"></div>
+
+  <div class="container">
+    <!-- Header with Logo -->
+    <header class="main-header">
+      <div class="logo-section">
+        <div class="logo-wrapper">
+          <img src="IMG/logo.jpeg" alt="Fluent Future Logo" class="logo-img">
+        </div>
+        <div class="header-text">
+          <h1> Fluent Future Admin Panel</h1>
+          <p>View and manage student submissions</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats Cards -->
+    <div class="stats-row">
+      <div class="stat-card stat-total">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+          <div class="stat-number" id="totalCount">0</div>
+          <div class="stat-label">Total Submissions</div>
+        </div>
+        <div class="stat-glow"></div>
+      </div>
+      <div class="stat-card stat-last">
+        <div class="stat-icon">🎫</div>
+        <div class="stat-info">
+          <div class="stat-number" id="lastId">-</div>
+          <div class="stat-label">Last Admission ID</div>
+        </div>
+        <div class="stat-glow"></div>
+      </div>
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <div class="controls-left">
+        <button class="btn-control btn-refresh" id="btnRefresh">
+          <span class="btn-icon">🔄</span>
+          <span class="btn-text">Refresh</span>
+        </button>
+        <button class="btn-control btn-export" id="btnExportCSV">
+          <span class="btn-icon">📥</span>
+          <span class="btn-text">Export CSV</span>
+        </button>
+      </div>
+      <div class="controls-right">
+        <button class="btn-control btn-danger" id="btnClearAll">
+          <span class="btn-icon">🗑️</span>
+          <span class="btn-text">Clear All</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar-wrapper">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by name or admission number..." autocomplete="off">
+        <button id="btnClearSearch" class="search-clear" aria-label="Clear search">✕</button>
+      </div>
+    </div>
+
+    <!-- Submissions List -->
+    <div class="submissions-wrapper">
+      <div class="section-header">
+        <span class="section-icon">📑</span>
+        <h2>Student Submissions</h2>
+        <div class="section-line"></div>
+      </div>
+      <div id="submissionsList"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="admin-footer">
+      <div class="footer-content">
+        <div class="footer-item">
+          <span class="footer-icon">💾</span>
+          <span>Data is stored locally in your browser</span>
+        </div>
+        <div class="footer-divider">•</div>
+        <div class="footer-item">
+          <span class="footer-icon">🔒</span>
+          <span>Keep this page private</span>
+        </div>
+      </div>
+      <div class="footer-brand">Fluent Future Academy © 2026</div>
+    </div>
+  </div>
+
+ <!-- Modal -->
+<div id="detailModal" class="modal" aria-hidden="true">
+  <div class="modal-overlay"></div>
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-header">
+      <div class="modal-header-icon">👁️</div>
+      <h2 id="modalTitle">Submission Details</h2>
+    </div>
+    <div id="detailsContent" class="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-image" id="btnDownloadImage">
+        <span>🖼️</span> Download Image (A4)
+      </button>
+      <button class="btn-modal btn-close" id="btnClose">Close</button>
+    </div>
+  </div>
+  <div id="printArea" class="print-area" aria-hidden="true" style="display:none;"></div>
+</div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
