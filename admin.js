@@ -1,6 +1,12 @@
 /* admin.js - Fluent Future Admin Panel */
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
+const SESSION_KEY = "ff_admin_session";
 
+function logout() {
+  localStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(SESSION_KEY);
+  window.location.href = "Naz235.html";
+}
 function loadLocal() {
   try { return JSON.parse(localStorage.getItem("submissions") || "[]"); }
   catch (e) { return []; }
@@ -544,6 +550,13 @@ function fetchAndMerge() {
 /*  INIT                                                        */
 /* ============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
+
+  // Logout button
+  const btnLogout = document.getElementById("btnLogout");
+  if (btnLogout) btnLogout.addEventListener("click", () => {
+    if (confirm("Are you sure you want to log out?")) logout();
+  });
+  
   const btnExport = document.getElementById("btnExportCSV");
   if (btnExport) btnExport.addEventListener("click", exportCSV);
 
