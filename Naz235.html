@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Fluent Future</title>
+  <link rel="stylesheet" href="Naz235.css">
+  <link rel="icon" type="image/png" href="IMG/logo.jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<base target="_blank">
+</head>
+<body>
+  <!-- Dark Mode Toggle -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+    <span class="theme-icon">☀️</span>
+  </button>
+
+  <!-- Floating Educational Stickers -->
+  <div class="sticker sticker-book">📚</div>
+  <div class="sticker sticker-graduation">🎓</div>
+  <div class="sticker sticker-pencil">✏️</div>
+  <div class="sticker sticker-apple">🍎</div>
+  <div class="sticker sticker-star">⭐</div>
+  <div class="sticker sticker-lightbulb">💡</div>
+  <div class="sticker sticker-globe">🌍</div>
+  <div class="sticker sticker-rocket">🚀</div>
+  <div class="sticker sticker-microscope">🔬</div>
+  <div class="sticker sticker-calculator">🧮</div>
+  <div class="sticker sticker-palette">🎨</div>
+  <div class="sticker sticker-music">🎵</div>
+
+  <!-- 3D Background Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Main Container -->
+  <div class="login-container">
+    <!-- 3D Card -->
+    <div class="login-card" id="loginCard">
+      <!-- Front: Login Form -->
+      <div class="card-face card-front">
+        <!-- Logo Section -->
+        <div class="logo-section">
+          <div class="logo-3d">
+            <div class="logo-ring logo-ring-1"></div>
+            <div class="logo-ring logo-ring-2"></div>
+            <div class="logo-ring logo-ring-3"></div>
+            <div class="logo-inner">
+              <img src="IMG/logo.jpeg" alt="Fluent Future Logo" class="logo-img">
+            </div>
+          </div>
+          <div class="logo-text">
+            <h1>Fluent Future</h1>
+            <p>Admin Portal</p>
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="login-form" autocomplete="off">
+          <div class="input-group" id="emailGroup">
+            <div class="input-icon">📧</div>
+            <input 
+              type="email" 
+              id="email" 
+              placeholder=" " 
+              required 
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <label for="email">Email Address</label>
+            <div class="input-line"></div>
+            <div class="input-glow"></div>
+          </div>
+
+          <div class="input-group" id="passwordGroup">
+            <div class="input-icon">🔒</div>
+            <input 
+              type="password" 
+              id="password" 
+              placeholder=" " 
+              required
+              autocomplete="off"
+            >
+            <label for="password">Password</label>
+            <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password">
+              <span class="eye-icon">👁️</span>
+            </button>
+            <div class="input-line"></div>
+            <div class="input-glow"></div>
+          </div>
+
+          <div class="remember-row">
+            <label class="remember-checkbox">
+              <input type="checkbox" id="rememberMe">
+              <span class="checkmark"></span>
+              <span class="remember-text">Remember me</span>
+            </label>
+            <a href="#" class="forgot-link" id="forgotPassword">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="login-btn" id="loginBtn">
+            <span class="btn-text">Sign In</span>
+            <span class="btn-icon">→</span>
+            <div class="btn-shine"></div>
+          </button>
+        </form>
+
+        <!-- Security Badge -->
+        <div class="security-badge">
+          <span class="shield-icon">🛡️</span>
+          <span>Secure Admin Access</span>
+        </div>
+      </div>
+
+      <!-- Back: Success Animation (hidden by default) -->
+      <div class="card-face card-back">
+        <div class="success-animation">
+          <div class="success-circle">
+            <div class="success-ring"></div>
+            <div class="success-ring"></div>
+            <div class="success-ring"></div>
+            <span class="success-check">✓</span>
+          </div>
+          <h2>Welcome Back!</h2>
+          <p>Redirecting to admin panel...</p>
+          <div class="loading-bar">
+            <div class="loading-progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating 3D Elements -->
+    <div class="float-element float-1">📖</div>
+    <div class="float-element float-2">🎓</div>
+    <div class="float-element float-3">✨</div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <div class="toast-icon">⚠️</div>
+    <div class="toast-message" id="toastMessage">Invalid credentials</div>
+  </div>
+
+  <script src="Naz235.js"></script>
+</body>
+</html>
