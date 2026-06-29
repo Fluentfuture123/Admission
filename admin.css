@@ -734,6 +734,22 @@ body {
 .btn-close:hover {
   background: #cbd5e1;
   transform: translateY(-2px);
+
+}
+
+/* ============================================ */
+/* LOGOUT BUTTON                               */
+/* ============================================ */
+
+.btn-logout {
+  background: linear-gradient(135deg, #ff5722, #e64a19);
+  color: white;
+  box-shadow: 0 4px 16px rgba(255, 87, 34, 0.25);
+}
+
+.btn-logout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.35);
 }
 
 /* ============================================ */
