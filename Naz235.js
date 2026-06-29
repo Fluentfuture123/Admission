@@ -1,9 +1,22 @@
 /* ============================================ */
-/* FLUENT FUTURE - LOGIN SYSTEM                 */
+/* FLUENT FUTURE - LOGIN SYSTEM with FIREBASE   */
 /* Complete authentication with security features */
 /* ============================================ */
 
-// Default admin credentials
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAXTPxNngR3i6wwJv6kfNqJn6jrjKLQgHk",
+  authDomain: "fluent-future-academy.firebaseapp.com",
+  projectId: "fluent-future-academy",
+  storageBucket: "fluent-future-academy.firebasestorage.app",
+  messagingSenderId: "228748850828",
+  appId: "1:228748850828:web:06e285e99cdc1eca9f2da9"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Default admin credentials (used for auto-create on first login)
 const DEFAULT_ADMIN = {
   email: "fluentfutureacademylk@gmail.com",
   password: "Nazry@123"
@@ -32,23 +45,19 @@ const particlesContainer = document.getElementById("particles");
 /* ============================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Check if already logged in
-  if (isLoggedIn()) {
-    redirectToAdmin();
-    return;
-  }
+  // Check Firebase Auth first - if logged in, go to admin immediately
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      redirectToAdmin();
+      return;
+    }
 
-  // Initialize theme
-  initTheme();
-
-  // Create floating particles
-  createParticles();
-
-  // Load remembered email if any
-  loadRememberedEmail();
-
-  // Setup event listeners
-  setupEventListeners();
+    // Not logged in - initialize login page normally
+    initTheme();
+    createParticles();
+    loadRememberedEmail();
+    setupEventListeners();
+  });
 });
 
 /* ============================================ */
@@ -76,7 +85,6 @@ function toggleTheme() {
   localStorage.setItem(THEME_KEY, newTheme);
   updateThemeIcon(!isDark);
 
-  // Animate transition
   document.body.style.transition = "background 0.5s ease";
 }
 
@@ -84,7 +92,7 @@ function updateThemeIcon(isDark) {
   const icon = themeToggle.querySelector('.theme-icon');
   icon.textContent = isDark ? '🌙' : '☀️';
   icon.style.animation = 'none';
-  icon.offsetHeight; // Trigger reflow
+  icon.offsetHeight;
   icon.style.animation = 'fadeInDown 0.3s ease';
 }
 
@@ -106,7 +114,6 @@ function createParticles() {
     particle.style.width = (2 + Math.random() * 4) + 'px';
     particle.style.height = particle.style.width;
 
-    // Random colors from theme
     const colors = ['#4CAF50', '#2196F3', '#81C784', '#42A5F5', '#66BB6A'];
     particle.style.background = colors[Math.floor(Math.random() * colors.length)];
 
@@ -162,10 +169,8 @@ function handleLogin(e) {
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
-  // Clear previous errors
   clearErrors();
 
-  // Validation
   let hasError = false;
 
   if (!email) {
@@ -186,26 +191,50 @@ function handleLogin(e) {
     return;
   }
 
-  // Show loading state
   setLoading(true);
 
-  // Simulate network delay for realism
-  setTimeout(() => {
-    // Check credentials
-    if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
-      // Success
+  // Firebase Authentication
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
       saveRememberedEmail(email);
       createSession(email);
       showSuccessAnimation();
-    } else {
-      // Failure
-      setLoading(false);
-      showToast("Invalid email or password. Please try again.", "error");
-      shakeCard();
-      passwordInput.value = "";
-      passwordInput.focus();
-    }
-  }, 800);
+    })
+    .catch((error) => {
+      // Auto-create admin account on first login if not exists
+      if (error.code === 'auth/user-not-found' && 
+          email === DEFAULT_ADMIN.email && 
+          password === DEFAULT_ADMIN.password) {
+        
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            saveRememberedEmail(email);
+            createSession(email);
+            showSuccessAnimation();
+          })
+          .catch((createError) => {
+            setLoading(false);
+            showToast("Setup failed: " + createError.message, "error");
+            shakeCard();
+            passwordInput.value = "";
+            passwordInput.focus();
+          });
+      } else if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        setLoading(false);
+        showToast("Invalid email or password. Please try again.", "error");
+        shakeCard();
+        passwordInput.value = "";
+        passwordInput.focus();
+      } else if (error.code === 'auth/network-request-failed') {
+        setLoading(false);
+        showToast("Network error. Check your internet connection.", "error");
+        shakeCard();
+      } else {
+        setLoading(false);
+        showToast("Login error: " + error.message, "error");
+        shakeCard();
+      }
+    });
 }
 
 /* ============================================ */
@@ -216,18 +245,14 @@ function createSession(email) {
   const session = {
     email: email,
     loggedInAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
   };
 
-  // Store session (in production, use httpOnly cookies)
   localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-
-  // Also store in sessionStorage for tab-specific session
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 
 function isLoggedIn() {
-  // Check both localStorage and sessionStorage
   const localSession = localStorage.getItem(SESSION_KEY);
   const sessionSession = sessionStorage.getItem(SESSION_KEY);
 
@@ -241,7 +266,6 @@ function isLoggedIn() {
     const expiresAt = new Date(session.expiresAt);
 
     if (now > expiresAt) {
-      // Session expired
       logout();
       return false;
     }
@@ -256,7 +280,6 @@ function isLoggedIn() {
 function logout() {
   localStorage.removeItem(SESSION_KEY);
   sessionStorage.removeItem(SESSION_KEY);
-  // Don't remove theme preference or remember me
 }
 
 /* ============================================ */
@@ -267,8 +290,6 @@ function showInputError(groupId, message) {
   const group = document.getElementById(groupId);
   if (group) {
     group.classList.add("error");
-
-    // Remove error after 3 seconds
     setTimeout(() => {
       group.classList.remove("error");
     }, 3000);
@@ -320,7 +341,6 @@ function showToast(message, type = "error") {
 function showSuccessAnimation() {
   loginCard.classList.add("flipped");
 
-  // Redirect after animation
   setTimeout(() => {
     redirectToAdmin();
   }, 2500);
@@ -344,22 +364,18 @@ function isValidEmail(email) {
 /* ============================================ */
 
 function setupEventListeners() {
-  // Form submit
   if (loginForm) {
     loginForm.addEventListener("submit", handleLogin);
   }
 
-  // Password toggle
   if (togglePassword) {
     togglePassword.addEventListener("click", togglePasswordVisibility);
   }
 
-  // Theme toggle
   if (themeToggle) {
     themeToggle.addEventListener("click", toggleTheme);
   }
 
-  // Input animations
   [emailInput, passwordInput].forEach(input => {
     if (input) {
       input.addEventListener("focus", () => {
@@ -370,19 +386,16 @@ function setupEventListeners() {
         input.parentElement.classList.remove("focused");
       });
 
-      // Remove error on input
       input.addEventListener("input", () => {
         input.parentElement.classList.remove("error");
       });
     }
   });
 
-  // Prevent form autocomplete for security
   if (loginForm) {
     loginForm.setAttribute("autocomplete", "off");
   }
 
-  // Keyboard shortcut for theme toggle (Ctrl/Cmd + Shift + L)
   document.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "L") {
       e.preventDefault();
@@ -408,17 +421,14 @@ if (forgotPassword) {
 /* ============================================ */
 
 window.addEventListener("beforeunload", () => {
-  // Don't clear password on normal navigation, only on tab close
-  // This is handled by sessionStorage which clears on tab close
+  // sessionStorage clears automatically on tab close
 });
 
-// Clear password when page is hidden (user switches tabs)
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && passwordInput) {
-    // Optional: clear password for extra security
-    // passwordInput.value = "";
+    // Optional: passwordInput.value = "";
   }
 });
 
-console.log("🔐 Fluent Future Login System initialized");
+console.log("🔐 Fluent Future Login System with Firebase initialized");
 console.log("💡 Press Ctrl+Shift+L to toggle dark mode");
