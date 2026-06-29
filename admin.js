@@ -1,4 +1,16 @@
-/* admin.js - Fluent Future Admin Panel */
+/* admin.js - Fluent Future Admin Panel with FIREBASE AUTH */
+const firebaseConfig = {
+  apiKey: "AIzaSyAXTPxNngR3i6wwJv6kfNqJn6jrjKLQgHk",
+  authDomain: "fluent-future-academy.firebaseapp.com",
+  projectId: "fluent-future-academy",
+  storageBucket: "fluent-future-academy.firebasestorage.app",
+  messagingSenderId: "228748850828",
+  appId: "1:228748850828:web:06e285e99cdc1eca9f2da9"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
 
 function loadLocal() {
@@ -24,26 +36,21 @@ function formatTimestamp(ts) {
   
   let date;
   
-  // If already a Date object
   if (ts instanceof Date && !isNaN(ts)) {
     date = ts;
   } 
-  // Try parsing ISO format or other standard formats first
   else if (typeof ts === 'string') {
     const str = String(ts).trim();
     
-    // Check if it's already in DD/MM/YYYY format — return as-is
     if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
       return str;
     }
     
-    // Try ISO format (2026-06-27T02:35:00)
     const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2}):(\d{2})/);
     if (isoMatch) {
       date = new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2])-1, parseInt(isoMatch[3]),
                       parseInt(isoMatch[4]), parseInt(isoMatch[5]), parseInt(isoMatch[6]));
     }
-    // Try US format: "6/27/2026, 2:40:59 AM" or "6/27/2026, 2:40:59 PM"
     else {
       const usMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),\s*(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)/i);
       if (usMatch) {
@@ -60,14 +67,12 @@ function formatTimestamp(ts) {
         
         date = new Date(year, month, day, hour, minute, second);
       }
-      // Try simple format: "6/27/2026" without time
       else {
         const simpleMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
         if (simpleMatch) {
           date = new Date(parseInt(simpleMatch[3]), parseInt(simpleMatch[1])-1, parseInt(simpleMatch[2]));
         }
         else {
-          // Last resort: try native Date.parse
           const parsed = Date.parse(str);
           if (!isNaN(parsed)) {
             date = new Date(parsed);
@@ -79,7 +84,6 @@ function formatTimestamp(ts) {
   
   if (!date || isNaN(date)) return String(ts);
   
-  // Format: DD/MM/YYYY, HH:MM:SS AM/PM
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
@@ -151,7 +155,6 @@ function renderSubmissions(filteredSubs = null) {
   }
 
   list.innerHTML = subs.map((s) => {
-    // FIX: Find original index in full array (allSubs), not filtered index
     const originalIndex = allSubs.findIndex(x => x.admissionNumber === s.admissionNumber);
     const ts = formatTimestamp(s.timestamp) || "Unknown";
     return `
@@ -272,7 +275,7 @@ function exportCSV() {
 }
 
 /* ============================================================ */
-/*  A4 HTML BUILDER — ALL FIELDS BOLD (700)                    */
+/*  A4 HTML BUILDER                                            */
 /* ============================================================ */
 function buildA4HTML(s) {
   const ts = formatTimestamp(s.timestamp) || "";
@@ -284,10 +287,8 @@ function buildA4HTML(s) {
   return `
 <div id="a4page" style="width:794px;height:1123px;background:#f8fafb;font-family:'Segoe UI',Arial,sans-serif;color:#1a202c;position:relative;overflow:hidden;box-sizing:border-box;margin:0;padding:0;line-height:1.4;">
 
-  <!-- Top accent bar -->
   <div style="height:6px;background:linear-gradient(90deg,#1b5e20,#2f8f3a,#4CAF50,#2f8f3a,#1b5e20);"></div>
 
-  <!-- Header -->
   <div style="display:flex;align-items:center;gap:16px;padding:24px 32px;background:#ffffff;border-bottom:2px solid #e2e8f0;">
     <div style="width:64px;height:64px;flex-shrink:0;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #e2e8f0;">
       <img src="${logoPath}" style="width:56px;height:56px;object-fit:contain;display:block;"
@@ -305,13 +306,10 @@ function buildA4HTML(s) {
     </div>
   </div>
 
-  <!-- Watermark -->
   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:72px;font-weight:900;color:rgba(27,94,32,0.025);letter-spacing:6px;pointer-events:none;z-index:0;white-space:nowrap;">FLUENT FUTURE</div>
 
-  <!-- Body -->
   <div style="padding:24px 32px;position:relative;z-index:1;">
 
-    <!-- Personal Information -->
     <div style="margin-bottom:16px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
       <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:linear-gradient(90deg,#f0fdf4,#ffffff);border-bottom:2px solid #bbf7d0;">
         <span style="font-size:16px;">👤</span>
@@ -337,7 +335,6 @@ function buildA4HTML(s) {
       </div>
     </div>
 
-    <!-- Contact Information -->
     <div style="margin-bottom:16px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
       <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:linear-gradient(90deg,#f0fdf4,#ffffff);border-bottom:2px solid #bbf7d0;">
         <span style="font-size:16px;">📞</span>
@@ -367,7 +364,6 @@ function buildA4HTML(s) {
       </div>
     </div>
 
-    <!-- Academic Information -->
     <div style="margin-bottom:16px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
       <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:linear-gradient(90deg,#f0fdf4,#ffffff);border-bottom:2px solid #bbf7d0;">
         <span style="font-size:16px;">📚</span>
@@ -385,7 +381,6 @@ function buildA4HTML(s) {
       </div>
     </div>
 
-    <!-- Additional Comments -->
     <div style="margin-bottom:16px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
       <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:linear-gradient(90deg,#f0fdf4,#ffffff);border-bottom:2px solid #bbf7d0;">
         <span style="font-size:16px;">📝</span>
@@ -400,7 +395,6 @@ function buildA4HTML(s) {
 
   </div>
 
-  <!-- Signature Area -->
   <div style="position:absolute;bottom:70px;left:32px;right:32px;z-index:1;">
     <div style="display:flex;justify-content:space-between;gap:40px;">
       <div style="flex:1;text-align:center;">
@@ -414,7 +408,6 @@ function buildA4HTML(s) {
     </div>
   </div>
 
-  <!-- Footer -->
   <div style="position:absolute;bottom:24px;left:32px;right:32px;z-index:1;">
     <div style="text-align:center;font-size:9px;color:#94a3b8;line-height:1.6;border-top:1px solid #e2e8f0;padding-top:8px;">
       <div>📅 Generated on: ${escapeHtml(ts)} &nbsp;|&nbsp; Fluent Future Academy &nbsp;|&nbsp; www.fluentfuture.com</div>
@@ -422,14 +415,11 @@ function buildA4HTML(s) {
     </div>
   </div>
 
-  <!-- Bottom accent bar -->
   <div style="height:4px;background:linear-gradient(90deg,#1b5e20,#2f8f3a,#4CAF50,#2f8f3a,#1b5e20);position:absolute;bottom:0;left:0;right:0;"></div>
 </div>
   `;
 }
-/* ============================================================ */
-/*  EXPORT HELPER — create visible off-screen element           */
-/* ============================================================ */
+
 function makeExportEl(html) {
   const old = document.getElementById("__exportTemp");
   if (old) old.remove();
@@ -461,9 +451,6 @@ function waitImages(el) {
   }));
 }
 
-/* ============================================================ */
-/*  IMAGE EXPORT                                                */
-/* ============================================================ */
 async function downloadImage() {
   if (!currentSubmission) { alert("No submission selected."); return; }
   console.log("[IMG] Starting export...");
@@ -500,9 +487,6 @@ async function downloadImage() {
   }
 }
 
-/* ============================================================ */
-/*  GOOGLE FETCH                                                */
-/* ============================================================ */
 function fetchAndMerge() {
   fetch(WEB_APP_URL)
     .then(r => r.json())
@@ -541,9 +525,50 @@ function fetchAndMerge() {
 }
 
 /* ============================================================ */
+/*  FIREBASE AUTH GUARD & LOGOUT                               */
+/* ============================================================ */
+
+function initAuthGuard() {
+  const authOverlay = document.getElementById("authChecking");
+  
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      // Not authenticated - redirect to login immediately
+      window.location.replace("Naz235.html");
+    } else {
+      // Authenticated - hide overlay and show content
+      if (authOverlay) authOverlay.classList.add("hidden");
+    }
+  });
+
+  // Safety fallback: if Firebase doesn't respond in 5 seconds, redirect
+  setTimeout(() => {
+    if (!firebase.auth().currentUser) {
+      window.location.replace("Naz235.html");
+    }
+  }, 5000);
+}
+
+function handleLogout() {
+  if (!confirm("Are you sure you want to logout?")) return;
+  
+  firebase.auth().signOut().then(() => {
+    localStorage.removeItem("ff_admin_session");
+    sessionStorage.removeItem("ff_admin_session");
+    window.location.replace("Naz235.html");
+  }).catch((error) => {
+    console.error("Logout error:", error);
+    alert("Logout failed. Please try again.");
+  });
+}
+
+/* ============================================================ */
 /*  INIT                                                        */
 /* ============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
+  // AUTH GUARD FIRST - Protect admin panel
+  initAuthGuard();
+
   const btnExport = document.getElementById("btnExportCSV");
   if (btnExport) btnExport.addEventListener("click", exportCSV);
 
@@ -558,6 +583,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const btnImage = document.getElementById("btnDownloadImage");
   if (btnImage) btnImage.addEventListener("click", downloadImage);
+
+  const btnLogout = document.getElementById("btnLogout");
+  if (btnLogout) btnLogout.addEventListener("click", handleLogout);
 
   const searchInput = document.getElementById("searchInput");
   const btnClearSearch = document.getElementById("btnClearSearch");
