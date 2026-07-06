@@ -109,6 +109,42 @@ function getSubjectsValue(s) {
   try { return String(raw); } catch (e) { return ""; }
 }
 
+
+/* ============================================================ */
+/*  FORMAT DOB - Clean date only, no timestamp                  */
+/* ============================================================ */
+function formatDOB(dobValue) {
+  if (!dobValue) return "";
+
+  const str = String(dobValue).trim();
+
+  // Already in dd-mm-yyyy format
+  if (/^\d{2}-\d{2}-\d{4}$/.test(str)) {
+    return str;
+  }
+
+  // ISO format: 2017-10-16T18:30:00.000Z or 2017-10-16
+  const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) {
+    const year = isoMatch[1];
+    const month = isoMatch[2];
+    const day = isoMatch[3];
+    return `${day}-${month}-${year}`;
+  }
+
+  // US format: 10/16/2017
+  const usMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (usMatch) {
+    const day = String(usMatch[2]).padStart(2, '0');
+    const month = String(usMatch[1]).padStart(2, '0');
+    const year = usMatch[3];
+    return `${day}-${month}-${year}`;
+  }
+
+  // If nothing matches, return as-is
+  return str;
+}
+
 /* ============================================================ */
 /*  SEARCH / FILTER                                             */
 /* ============================================================ */
@@ -204,7 +240,7 @@ function viewDetails(index) {
     <div class="detail-grid">
       <div class="detail-field"><div class="detail-label">Name</div><div class="detail-value">${escapeHtml(s.name)}</div></div>
       <div class="detail-field"><div class="detail-label">Age</div><div class="detail-value">${escapeHtml(s.age || "—")}</div></div>
-      <div class="detail-field"><div class="detail-label">Date of Birth</div><div class="detail-value">${escapeHtml(s.dob || "—")}</div></div>
+      <div class="detail-field"><div class="detail-label">Date of Birth</div><div class="detail-value">${escapeHtml(formatDOB(s.dob) || "—")}</div></div>
       <div class="detail-field"><div class="detail-label">Gender</div><div class="detail-value">${escapeHtml(s.gender || "—")}</div></div>
       <div class="detail-field"><div class="detail-label">Email</div><div class="detail-value">${escapeHtml(s.email)}</div></div>
       <div class="detail-field"><div class="detail-label">Phone</div><div class="detail-value">${escapeHtml(s.phone)}</div></div>
@@ -326,7 +362,7 @@ function buildA4HTML(s) {
         </div>
         <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
           <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Date of Birth</div>
-          <div style="font-size:14px;color:#1a202c;font-weight:700;">${escapeHtml(s.dob || "—")}</div>
+          <div style="font-size:14px;color:#1a202c;font-weight:700;">${escapeHtml(formatDOB(s.dob) || "—")}</div>
         </div>
         <div style="background:#f8fafb;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;">
           <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;letter-spacing:0.5px;">Gender</div>
