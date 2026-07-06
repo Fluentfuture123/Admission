@@ -1,4 +1,7 @@
-// ADMISSION NUMBER SYSTEM
+// ============================================
+// Fluent Future - script.js (Form Submission)
+// ============================================
+
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
 
 function getLastAdmissionNumber() {
@@ -12,7 +15,7 @@ function saveAdmissionNumber(num) {
 
 async function fetchMaxAdmissionNumber() {
   try {
-    const response = await fetch(WEB_APP_URL);
+    const response = await fetch(WEB_APP_URL + "?action=getAll");
     const data = await response.json();
     if (Array.isArray(data) && data.length > 0) {
       const nums = data.map(row => {
@@ -338,24 +341,37 @@ document.addEventListener("DOMContentLoaded", function () {
       timestamp: new Date().toLocaleString()
     };
 
-    // ✅ Save locally
+    // Save locally
     storeSubmissionData(formDataObj);
 
-    // ✅ Save to Google Sheets
-    const formData = new FormData();
-    for (const key in formDataObj) {
-      formData.append(key, formDataObj[key]);
-    }
+    // Save to Google Sheets with action and status
+    const sheetData = {
+      action: "submit",
+      status: "Active",
+      admissionNumber: admissionNumber,
+      name: name,
+      age: age,
+      dob: dob,
+      gender: gender,
+      email: email,
+      phone: phone,
+      school: school,
+      address: address,
+      subjects: subjects,
+      grade: grade,
+      message: message
+    };
 
     fetch(WEB_APP_URL, {
       method: "POST",
-      body: formData,
+      body: JSON.stringify(sheetData),
+      headers: { "Content-Type": "application/json" },
       mode: "no-cors"
     })
     .then(() => console.log("Sent to Google Sheets"))
     .catch(err => console.error("Error sending to Sheets:", err));
 
-    // ✅ Redirect to thanks page
+    // Redirect to thanks page
     window.location.href = "thanks.html?id=" + encodeURIComponent(admissionNumber);
   });
 });
