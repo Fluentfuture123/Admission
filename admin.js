@@ -1,4 +1,4 @@
-/* admin.js - Fluent Future Admin Panel with FIREBASE AUTH */
+/* admin.js - Fluent Future Admin Panel with FIREBASE AUTH + GOOGLE SHEETS SYNC */
 const firebaseConfig = {
   apiKey: "AIzaSyAXTPxNngR3i6wwJv6kfNqJn6jrjKLQgHk",
   authDomain: "fluent-future-academy.firebaseapp.com",
@@ -33,19 +33,19 @@ function escapeHtml(str) {
 
 function formatTimestamp(ts) {
   if (!ts && ts !== 0) return "";
-  
+
   let date;
-  
+
   if (ts instanceof Date && !isNaN(ts)) {
     date = ts;
   } 
   else if (typeof ts === 'string') {
     const str = String(ts).trim();
-    
+
     if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
       return str;
     }
-    
+
     const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2}):(\d{2})/);
     if (isoMatch) {
       date = new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2])-1, parseInt(isoMatch[3]),
@@ -61,10 +61,10 @@ function formatTimestamp(ts) {
         const minute = parseInt(usMatch[5], 10);
         const second = parseInt(usMatch[6], 10);
         const ampm = usMatch[7].toUpperCase();
-        
+
         if (ampm === "PM" && hour !== 12) hour += 12;
         if (ampm === "AM" && hour === 12) hour = 0;
-        
+
         date = new Date(year, month, day, hour, minute, second);
       }
       else {
@@ -81,34 +81,33 @@ function formatTimestamp(ts) {
       }
     }
   }
-  
+
   if (!date || isNaN(date)) return String(ts);
-  
+
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
-  
+
   let hours = date.getHours();
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
   const ampm = hours >= 12 ? 'PM' : 'AM';
-  
+
   hours = hours % 12;
   hours = hours ? hours : 12;
   hours = String(hours).padStart(2, '0');
-  
+
   return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
 function getSubjectsValue(s) {
   if (!s) return "";
-  const raw = s.subjects ?? s.subject ?? "";
+  const raw = s.subjects ?? s.Subjects ?? s.subject ?? "";
   if (!raw) return "";
   if (Array.isArray(raw)) return raw.join(", ");
   if (typeof raw === "string") return raw;
   try { return String(raw); } catch (e) { return ""; }
 }
-
 
 /* ============================================================ */
 /*  FORMAT DOB - Clean date only, no timestamp                  */
@@ -172,17 +171,20 @@ function clearSearch() {
 }
 
 /* ============================================================ */
-/*  RENDER LIST                                               */
+/*  RENDER LIST - Hides "Deleted" items                       */
 /* ============================================================ */
 function renderSubmissions(filteredSubs = null) {
   const allSubs = loadLocal();
-  const subs = filteredSubs != null ? filteredSubs : allSubs;
+  // Filter out "Deleted" status items
+  const activeSubs = allSubs.filter(s => s.status !== "Deleted");
+  const subs = filteredSubs != null ? filteredSubs.filter(s => s.status !== "Deleted") : activeSubs;
+
   const list = document.getElementById("submissionsList");
   const totalCountEl = document.getElementById("totalCount");
   const lastIdEl = document.getElementById("lastId");
 
-  if (totalCountEl) totalCountEl.textContent = allSubs.length;
-  if (lastIdEl) lastIdEl.textContent = allSubs.length ? allSubs[allSubs.length - 1].admissionNumber : "-";
+  if (totalCountEl) totalCountEl.textContent = activeSubs.length;
+  if (lastIdEl) lastIdEl.textContent = activeSubs.length ? activeSubs[activeSubs.length - 1].admissionNumber : "-";
   if (!list) return;
 
   if (!subs.length) {
@@ -225,7 +227,7 @@ function onViewClick(e) { const idx = parseInt(e.currentTarget.getAttribute("dat
 function onDeleteClick(e) { const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10); deleteSubmission(idx); }
 
 /* ============================================================ */
-/*  MODAL                                                     */
+/*  MODAL                                                       */
 /* ============================================================ */
 function viewDetails(index) {
   const subs = loadLocal();
@@ -264,28 +266,70 @@ function closeModal() {
   currentSubmission = null;
 }
 
+/* ============================================================ */
+/*  DELETE - Soft Delete + Google Sheets Sync                   */
+/* ============================================================ */
 function deleteSubmission(index) {
   if (!confirm("Delete this submission?")) return;
+
   const subs = loadLocal();
   if (index < 0 || index >= subs.length) return;
-  subs.splice(index, 1);
+
+  const item = subs[index];
+  const admissionNumber = item.admissionNumber;
+
+  // Sync with Google Sheets (soft delete)
+  fetch(WEB_APP_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "delete", id: admissionNumber }),
+    headers: { "Content-Type": "application/json" },
+    mode: "no-cors"
+  })
+  .then(() => console.log("Delete synced to Google Sheets"))
+  .catch(err => console.error("Error syncing delete:", err));
+
+  // Mark as deleted locally
+  subs[index].status = "Deleted";
   saveLocal(subs);
   renderSubmissions();
   closeModal();
 }
 
+/* ============================================================ */
+/*  CLEAR ALL - Bulk Soft Delete + Google Sheets Sync           */
+/* ============================================================ */
 function clearAll() {
   if (!confirm("Delete all submissions?")) return;
-  localStorage.removeItem("submissions");
+
+  // Sync with Google Sheets
+  fetch(WEB_APP_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "clearAll" }),
+    headers: { "Content-Type": "application/json" },
+    mode: "no-cors"
+  })
+  .then(() => console.log("Clear all synced to Google Sheets"))
+  .catch(err => console.error("Error syncing clear all:", err));
+
+  // Mark all as deleted locally
+  const subs = loadLocal();
+  subs.forEach(s => s.status = "Deleted");
+  saveLocal(subs);
   renderSubmissions();
   closeModal();
 }
 
+/* ============================================================ */
+/*  EXPORT CSV - Only Active items                              */
+/* ============================================================ */
 function exportCSV() {
   const subs = loadLocal();
-  if (!subs.length) return alert("No submissions!");
+  const activeSubs = subs.filter(s => s.status !== "Deleted");
+
+  if (!activeSubs.length) return alert("No submissions!");
+
   const headers = ["Admission No", "Name", "Age", "DOB", "Gender", "Email", "Phone", "School", "Address", "Grade", "Subjects", "Comments", "Timestamp"];
-  const rows = subs.map(s => [
+  const rows = activeSubs.map(s => [
     s.admissionNumber || "",
     s.name || "",
     s.age || "",
@@ -297,10 +341,12 @@ function exportCSV() {
     s.address || "",
     s.grade || "",
     getSubjectsValue(s) || "",
-    (s.message || "").replace(/\n/g, " "),
+    (s.message || "").replace(/
+/g, " "),
     formatTimestamp(s.timestamp) || ""
   ]);
-  const csv = [headers].concat(rows).map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const csv = [headers].concat(rows).map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("
+");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -311,7 +357,7 @@ function exportCSV() {
 }
 
 /* ============================================================ */
-/*  A4 HTML BUILDER                                            */
+/*  A4 HTML BUILDER                                             */
 /* ============================================================ */
 function buildA4HTML(s) {
   const ts = formatTimestamp(s.timestamp) || "";
@@ -516,23 +562,37 @@ async function downloadImage() {
     console.log("[IMG] Saved successfully!");
   } catch (err) {
     console.error("[IMG] Error:", err);
-    alert("Image export failed.\\nError: " + (err.message || err));
+    alert("Image export failed.\nError: " + (err.message || err));
   } finally {
     el.remove();
     console.log("[IMG] Cleanup done.");
   }
 }
 
+/* ============================================================ */
+/*  FETCH & MERGE - Skip "Deleted" from Sheets + Local Sync     */
+/* ============================================================ */
 function fetchAndMerge() {
-  fetch(WEB_APP_URL)
+  const btnRefresh = document.getElementById("btnRefresh");
+  if (btnRefresh) {
+    btnRefresh.innerText = "🔄 Loading...";
+    btnRefresh.disabled = true;
+  }
+
+  fetch(WEB_APP_URL + "?action=getAll")
     .then(r => r.json())
     .then(data => {
       if (!Array.isArray(data)) throw new Error("Invalid data");
       const local = loadLocal();
       const existing = new Set(local.map(x => x.admissionNumber));
+
       data.forEach(raw => {
-        const admissionNumber = raw.AdmissionNumber || raw.admissionNumber || raw["Admission No"] || "";
-        if (!admissionNumber) return;
+        const admissionNumber = raw.AdmissionNumber || raw.admissionNumber || "";
+        const status = raw.Status || raw.status || "Active";
+
+        // Skip deleted items from Google Sheets
+        if (status === "Deleted") return;
+
         if (!existing.has(admissionNumber)) {
           local.push({
             admissionNumber: admissionNumber,
@@ -545,18 +605,26 @@ function fetchAndMerge() {
             school: raw.School || raw.school || "",
             address: raw.Address || raw.address || "",
             grade: raw.Grade || raw.grade || "",
-            subjects: raw.Subjects || raw.subjects || raw.Subject || raw.subject || "",
+            subjects: raw.Subjects || raw.subjects || "",
             message: raw.Message || raw.message || "",
-            timestamp: raw.Timestamp || raw.timestamp || new Date().toISOString()
+            timestamp: raw.Timestamp || raw.timestamp || new Date().toLocaleString(),
+            status: "Active"
           });
         }
       });
+
       saveLocal(local);
       renderSubmissions();
     })
     .catch(err => {
       console.warn("Fetch failed:", err);
       renderSubmissions();
+    })
+    .finally(() => {
+      if (btnRefresh) {
+        btnRefresh.innerText = "🔄 Refresh";
+        btnRefresh.disabled = false;
+      }
     });
 }
 
@@ -566,18 +634,15 @@ function fetchAndMerge() {
 
 function initAuthGuard() {
   const authOverlay = document.getElementById("authChecking");
-  
+
   firebase.auth().onAuthStateChanged((user) => {
     if (!user) {
-      // Not authenticated - redirect to login immediately
       window.location.replace("Naz235.html");
     } else {
-      // Authenticated - hide overlay and show content
       if (authOverlay) authOverlay.classList.add("hidden");
     }
   });
 
-  // Safety fallback: if Firebase doesn't respond in 5 seconds, redirect
   setTimeout(() => {
     if (!firebase.auth().currentUser) {
       window.location.replace("Naz235.html");
@@ -587,7 +652,7 @@ function initAuthGuard() {
 
 function handleLogout() {
   if (!confirm("Are you sure you want to logout?")) return;
-  
+
   firebase.auth().signOut().then(() => {
     localStorage.removeItem("ff_admin_session");
     sessionStorage.removeItem("ff_admin_session");
