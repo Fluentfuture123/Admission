@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Fluent Future Admission Form</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="icon" type="image/png" href="IMG/logo.jpeg">
+</head>
+<body>
+
+  <!-- Header Section -->
+  <div class="container">
+    <h1>GET YOUR ADMISSION HERE</h1>
+    <img src="IMG/logo.jpeg" alt="Fluent Future Logo">
+  </div>
+
+  <!-- Admission Form -->
+  <div class="form-container">
+    <h2>Fluent Future Admission Form</h2>
+    <form id="admissionForm">
+
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" name="name" placeholder="Enter the name of student" required>
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" placeholder="Select age" required>
+
+      <label for="dob">Date of Birth:</label>
+      <div class="dob-wrapper">
+        <input type="text" id="dob" name="dob" placeholder="dd-mm-yyyy" readonly required>
+        <span class="dob-icon">📅</span>
+        <div class="custom-calendar" id="customCalendar">
+          <div class="cal-header">
+            <button type="button" class="cal-nav" id="calPrev">‹</button>
+            <div class="cal-title">
+              <div class="cal-select-wrapper">
+                <button type="button" class="cal-select-btn" id="calMonthBtn">June</button>
+                <div class="cal-dropdown" id="calMonthDropdown">
+                  <div class="cal-dropdown-scroll" id="calMonthOptions"></div>
+                </div>
+              </div>
+              <div class="cal-select-wrapper">
+                <button type="button" class="cal-select-btn" id="calYearBtn">2026</button>
+                <div class="cal-dropdown" id="calYearDropdown">
+                  <div class="cal-dropdown-scroll" id="calYearOptions"></div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="cal-nav" id="calNext">›</button>
+          </div>
+          <div class="cal-weekdays">
+            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+          </div>
+          <div class="cal-days" id="calDays"></div>
+          <div class="cal-footer">
+            <button type="button" class="cal-btn cal-clear" id="calClear">Clear</button>
+            <button type="button" class="cal-btn cal-today" id="calToday">Today</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="gender-row">
+        <label>Gender:</label>
+        <label class="gender-option">
+          <input type="radio" name="gender" value="Male">
+          Male
+        </label>
+        <label class="gender-option">
+          <input type="radio" name="gender" value="Female">
+          Female
+        </label>
+      </div>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="Enter valid E-mail" required>
+
+      <label for="phone">Phone Number:</label>
+      <input type="tel" id="phone" name="phone" placeholder="Enter a valid phone number" required>
+
+      <label for="school">School:</label>
+      <input type="text" id="school" name="school" placeholder="Enter school name" required>
+
+      <label for="address">Current Residential Address:</label>
+      <textarea id="address" name="address" placeholder="Enter your current residential address" rows="3"></textarea>
+
+      <label>Select Subjects:</label>
+      <div class="subjects-box">
+        <label class="subject-option">
+          <input type="checkbox" name="subjects[]" value="English">
+          English
+        </label>
+        <label class="subject-option">
+          <input type="checkbox" name="subjects[]" value="Science">
+          Science
+        </label>
+        <label class="subject-option">
+          <input type="checkbox" name="subjects[]" value="History">
+          History
+        </label>
+        <label class="subject-option">
+          <input type="checkbox" name="subjects[]" value="Tamil">
+          Tamil
+        </label>
+        <label class="subject-option">
+          <input type="checkbox" name="subjects[]" value="Geography">
+          Geography
+        </label>
+      </div>
+
+      <label for="grade">Select Grade:</label>
+      <select id="grade" name="grade">
+        <option value="grade 1">Grade 1</option>
+        <option value="grade 2">Grade 2</option>
+        <option value="grade 3">Grade 3</option>
+        <option value="grade 4">Grade 4</option>
+        <option value="grade 5">Grade 5</option>
+        <option value="grade 6">Grade 6</option>
+        <option value="grade 7">Grade 7</option>
+        <option value="grade 8">Grade 8</option>
+        <option value="grade 9">Grade 9</option>
+        <option value="grade 10">Grade 10</option>
+      </select>
+
+      <label for="message">Additional Comments:</label>
+      <textarea id="message" name="message" placeholder="Write your comments here"></textarea>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-btn" id="submitBtn">Submit</button>
+
+    </form>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p>&copy; 2026 www.fluentfuture.com. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="about.html" target="_blank">About</a> |
+        <a href="contact.html" target="_blank">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+
+</body>
+</html>
