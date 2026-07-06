@@ -634,20 +634,30 @@ function fetchAndMerge() {
 
 function initAuthGuard() {
   const authOverlay = document.getElementById("authChecking");
+  console.log("[AUTH] Initializing auth guard...");
 
   firebase.auth().onAuthStateChanged((user) => {
+    console.log("[AUTH] Auth state changed:", user ? "LOGGED IN" : "NOT LOGGED IN");
     if (!user) {
+      console.log("[AUTH] Redirecting to login...");
       window.location.replace("Naz235.html");
     } else {
+      console.log("[AUTH] User authenticated, hiding overlay");
       if (authOverlay) authOverlay.classList.add("hidden");
     }
   });
 
+  // Fallback: if auth takes too long, check currentUser directly
   setTimeout(() => {
-    if (!firebase.auth().currentUser) {
+    const user = firebase.auth().currentUser;
+    console.log("[AUTH] Fallback check, user:", user ? "EXISTS" : "NULL");
+    if (!user) {
+      console.log("[AUTH] No user found, redirecting...");
       window.location.replace("Naz235.html");
+    } else {
+      if (authOverlay) authOverlay.classList.add("hidden");
     }
-  }, 5000);
+  }, 3000);
 }
 
 function handleLogout() {
