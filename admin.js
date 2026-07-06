@@ -8,8 +8,10 @@ const firebaseConfig = {
   appId: "1:228748850828:web:06e285e99cdc1eca9f2da9"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase (only if not already initialized)
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
 
@@ -38,7 +40,7 @@ function formatTimestamp(ts) {
 
   if (ts instanceof Date && !isNaN(ts)) {
     date = ts;
-  } 
+  }
   else if (typeof ts === 'string') {
     const str = String(ts).trim();
 
@@ -341,12 +343,10 @@ function exportCSV() {
     s.address || "",
     s.grade || "",
     getSubjectsValue(s) || "",
-    (s.message || "").replace(/
-/g, " "),
+    (s.message || "").replace(/\n/g, " "),
     formatTimestamp(s.timestamp) || ""
   ]);
-  const csv = [headers].concat(rows).map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("
-");
+  const csv = [headers].concat(rows).map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -629,20 +629,28 @@ function fetchAndMerge() {
 }
 
 /* ============================================================ */
-/*  FIREBASE AUTH GUARD & LOGOUT                               */
+/*  FIREBASE AUTH GUARD & LOGOUT - FIXED VERSION               */
 /* ============================================================ */
 
 function initAuthGuard() {
   const authOverlay = document.getElementById("authChecking");
-  console.log("[AUTH] Initializing auth guard...");
+
+  // Check if Firebase is available
+  if (typeof firebase === 'undefined' || !firebase.auth) {
+    console.error("[AUTH] Firebase not loaded!");
+    if (authOverlay) {
+      authOverlay.innerHTML = '<div style="color:#f44336;font-weight:600;">⚠️ Firebase failed to load. Please refresh.</div>';
+    }
+    setTimeout(() => {
+      window.location.replace("Naz235.html");
+    }, 3000);
+    return;
+  }
 
   firebase.auth().onAuthStateChanged((user) => {
-    console.log("[AUTH] Auth state changed:", user ? "LOGGED IN" : "NOT LOGGED IN");
     if (!user) {
-      console.log("[AUTH] Redirecting to login...");
       window.location.replace("Naz235.html");
     } else {
-      console.log("[AUTH] User authenticated, hiding overlay");
       if (authOverlay) authOverlay.classList.add("hidden");
     }
   });
@@ -650,9 +658,7 @@ function initAuthGuard() {
   // Fallback: if auth takes too long, check currentUser directly
   setTimeout(() => {
     const user = firebase.auth().currentUser;
-    console.log("[AUTH] Fallback check, user:", user ? "EXISTS" : "NULL");
     if (!user) {
-      console.log("[AUTH] No user found, redirecting...");
       window.location.replace("Naz235.html");
     } else {
       if (authOverlay) authOverlay.classList.add("hidden");
