@@ -1,25 +1,37 @@
-/* admin.js - Fluent Future Admin Panel with FIREBASE AUTH + GOOGLE SHEETS SYNC */
+/* ============================================ */
+/* admin.js - Fluent Future Admin Panel         */
+/* Firebase Auth + Realtime Database + Sheets   */
+/* ============================================ */
+
 const firebaseConfig = {
   apiKey: "AIzaSyAXTPxNngR3i6wwJv6kfNqJn6jrjKLQgHk",
   authDomain: "fluent-future-academy.firebaseapp.com",
   projectId: "fluent-future-academy",
   storageBucket: "fluent-future-academy.firebasestorage.app",
   messagingSenderId: "228748850828",
-  appId: "1:228748850828:web:06e285e99cdc1eca9f2da9"
+  appId: "1:228748850828:web:06e285e99cdc1eca9f2da9",
+  databaseURL: "https://fluent-future-academy-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-// Initialize Firebase (only if not already initialized)
+// Initialize Firebase
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
+const db = firebase.database();
+const submissionsRef = db.ref('submissions');
+
+// Google Sheets URL (backup)
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
 
 function loadLocal() {
   try { return JSON.parse(localStorage.getItem("submissions") || "[]"); }
   catch (e) { return []; }
 }
-function saveLocal(arr) { localStorage.setItem("submissions", JSON.stringify(arr)); }
+
+function saveLocal(arr) { 
+  localStorage.setItem("submissions", JSON.stringify(arr)); 
+}
 
 let currentSubmission = null;
 
@@ -35,19 +47,13 @@ function escapeHtml(str) {
 
 function formatTimestamp(ts) {
   if (!ts && ts !== 0) return "";
-
   let date;
-
   if (ts instanceof Date && !isNaN(ts)) {
     date = ts;
   }
   else if (typeof ts === 'string') {
     const str = String(ts).trim();
-
-    if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
-      return str;
-    }
-
+    if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) return str;
     const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2}):(\d{2})/);
     if (isoMatch) {
       date = new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2])-1, parseInt(isoMatch[3]),
@@ -63,10 +69,8 @@ function formatTimestamp(ts) {
         const minute = parseInt(usMatch[5], 10);
         const second = parseInt(usMatch[6], 10);
         const ampm = usMatch[7].toUpperCase();
-
         if (ampm === "PM" && hour !== 12) hour += 12;
         if (ampm === "AM" && hour === 12) hour = 0;
-
         date = new Date(year, month, day, hour, minute, second);
       }
       else {
@@ -76,29 +80,22 @@ function formatTimestamp(ts) {
         }
         else {
           const parsed = Date.parse(str);
-          if (!isNaN(parsed)) {
-            date = new Date(parsed);
-          }
+          if (!isNaN(parsed)) date = new Date(parsed);
         }
       }
     }
   }
-
   if (!date || isNaN(date)) return String(ts);
-
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
-
   let hours = date.getHours();
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
   const ampm = hours >= 12 ? 'PM' : 'AM';
-
   hours = hours % 12;
   hours = hours ? hours : 12;
   hours = String(hours).padStart(2, '0');
-
   return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
@@ -111,38 +108,20 @@ function getSubjectsValue(s) {
   try { return String(raw); } catch (e) { return ""; }
 }
 
-/* ============================================================ */
-/*  FORMAT DOB - Clean date only, no timestamp                  */
-/* ============================================================ */
 function formatDOB(dobValue) {
   if (!dobValue) return "";
-
   const str = String(dobValue).trim();
-
-  // Already in dd-mm-yyyy format
-  if (/^\d{2}-\d{2}-\d{4}$/.test(str)) {
-    return str;
-  }
-
-  // ISO format: 2017-10-16T18:30:00.000Z or 2017-10-16
+  if (/^\d{2}-\d{2}-\d{4}$/.test(str)) return str;
   const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (isoMatch) {
-    const year = isoMatch[1];
-    const month = isoMatch[2];
-    const day = isoMatch[3];
-    return `${day}-${month}-${year}`;
+    return `${isoMatch[3]}-${isoMatch[2]}-${isoMatch[1]}`;
   }
-
-  // US format: 10/16/2017
   const usMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   if (usMatch) {
     const day = String(usMatch[2]).padStart(2, '0');
     const month = String(usMatch[1]).padStart(2, '0');
-    const year = usMatch[3];
-    return `${day}-${month}-${year}`;
+    return `${day}-${month}-${usMatch[3]}`;
   }
-
-  // If nothing matches, return as-is
   return str;
 }
 
@@ -173,11 +152,10 @@ function clearSearch() {
 }
 
 /* ============================================================ */
-/*  RENDER LIST - Hides "Deleted" items                       */
+/*  RENDER LIST                                                 */
 /* ============================================================ */
 function renderSubmissions(filteredSubs = null) {
   const allSubs = loadLocal();
-  // Filter out "Deleted" status items
   const activeSubs = allSubs.filter(s => s.status !== "Deleted");
   const subs = filteredSubs != null ? filteredSubs.filter(s => s.status !== "Deleted") : activeSubs;
 
@@ -225,8 +203,15 @@ function renderSubmissions(filteredSubs = null) {
   });
 }
 
-function onViewClick(e) { const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10); viewDetails(idx); }
-function onDeleteClick(e) { const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10); deleteSubmission(idx); }
+function onViewClick(e) { 
+  const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10); 
+  viewDetails(idx); 
+}
+
+function onDeleteClick(e) { 
+  const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10); 
+  deleteSubmission(idx); 
+}
 
 /* ============================================================ */
 /*  MODAL                                                       */
@@ -269,7 +254,7 @@ function closeModal() {
 }
 
 /* ============================================================ */
-/*  DELETE - Soft Delete + Google Sheets Sync                   */
+/*  DELETE - Firebase + Google Sheets                           */
 /* ============================================================ */
 function deleteSubmission(index) {
   if (!confirm("Delete this submission?")) return;
@@ -279,18 +264,27 @@ function deleteSubmission(index) {
 
   const item = subs[index];
   const admissionNumber = item.admissionNumber;
+  const safeKey = admissionNumber.replace(/[.#$[\]]/g, '_');
 
-  // Sync with Google Sheets (soft delete)
+  // 1. Update Firebase - mark as deleted
+  submissionsRef.child(safeKey).update({
+    status: "Deleted",
+    deletedAt: new Date().toISOString()
+  })
+  .then(() => console.log("✅ Firebase: Deleted", admissionNumber))
+  .catch(err => console.error("❌ Firebase delete error:", err));
+
+  // 2. Sync with Google Sheets (soft delete)
   fetch(WEB_APP_URL, {
     method: "POST",
     body: JSON.stringify({ action: "delete", id: admissionNumber }),
     headers: { "Content-Type": "application/json" },
     mode: "no-cors"
   })
-  .then(() => console.log("Delete synced to Google Sheets"))
-  .catch(err => console.error("Error syncing delete:", err));
+  .then(() => console.log("✅ Sheets: Delete synced"))
+  .catch(err => console.error("❌ Sheets delete error:", err));
 
-  // Mark as deleted locally
+  // 3. Mark as deleted locally
   subs[index].status = "Deleted";
   saveLocal(subs);
   renderSubmissions();
@@ -298,23 +292,38 @@ function deleteSubmission(index) {
 }
 
 /* ============================================================ */
-/*  CLEAR ALL - Bulk Soft Delete + Google Sheets Sync           */
+/*  CLEAR ALL - Firebase + Google Sheets                        */
 /* ============================================================ */
 function clearAll() {
   if (!confirm("Delete all submissions?")) return;
 
-  // Sync with Google Sheets
+  const subs = loadLocal();
+  
+  // 1. Update all in Firebase
+  const updates = {};
+  subs.forEach(s => {
+    const key = (s.admissionNumber || "").replace(/[.#$[\]]/g, '_');
+    if (key) {
+      updates[key + '/status'] = "Deleted";
+      updates[key + '/deletedAt'] = new Date().toISOString();
+    }
+  });
+  
+  submissionsRef.update(updates)
+    .then(() => console.log("✅ Firebase: All marked deleted"))
+    .catch(err => console.error("❌ Firebase clear error:", err));
+
+  // 2. Sync with Google Sheets
   fetch(WEB_APP_URL, {
     method: "POST",
     body: JSON.stringify({ action: "clearAll" }),
     headers: { "Content-Type": "application/json" },
     mode: "no-cors"
   })
-  .then(() => console.log("Clear all synced to Google Sheets"))
-  .catch(err => console.error("Error syncing clear all:", err));
+  .then(() => console.log("✅ Sheets: Clear all synced"))
+  .catch(err => console.error("❌ Sheets clear error:", err));
 
-  // Mark all as deleted locally
-  const subs = loadLocal();
+  // 3. Mark all as deleted locally
   subs.forEach(s => s.status = "Deleted");
   saveLocal(subs);
   renderSubmissions();
@@ -322,7 +331,7 @@ function clearAll() {
 }
 
 /* ============================================================ */
-/*  EXPORT CSV - Only Active items                              */
+/*  EXPORT CSV                                                  */
 /* ============================================================ */
 function exportCSV() {
   const subs = loadLocal();
@@ -570,9 +579,62 @@ async function downloadImage() {
 }
 
 /* ============================================================ */
-/*  FETCH & MERGE - Skip "Deleted" from Sheets + Local Sync     */
+/*  FIREBASE REALTIME SYNC - Primary Data Source                */
 /* ============================================================ */
-function fetchAndMerge() {
+function setupFirebaseSync() {
+  console.log("[SYNC] 🔥 Setting up Firebase Realtime sync...");
+  
+  submissionsRef.on('value', (snapshot) => {
+    console.log("[SYNC] 📡 Firebase data received");
+    const data = snapshot.val();
+    
+    if (!data) {
+      console.log("[SYNC] ⚠️ No data in Firebase, trying Google Sheets fallback...");
+      fetchFromGoogleSheets();
+      return;
+    }
+    
+    // Convert Firebase object to array
+    const firebaseSubs = Object.entries(data).map(([key, value]) => ({
+      ...value,
+      firebaseKey: key
+    }));
+    
+    console.log("[SYNC] ✅ Firebase submissions count:", firebaseSubs.length);
+    
+    // Merge with local
+    const local = loadLocal();
+    const existingKeys = new Set(local.map(x => x.admissionNumber));
+    
+    // Add new items from Firebase
+    firebaseSubs.forEach(s => {
+      if (s.status !== "Deleted" && !existingKeys.has(s.admissionNumber)) {
+        local.push(s);
+      }
+    });
+    
+    // Update existing items (status changes, etc.)
+    firebaseSubs.forEach(fbSub => {
+      const localIndex = local.findIndex(x => x.admissionNumber === fbSub.admissionNumber);
+      if (localIndex !== -1) {
+        local[localIndex] = { ...local[localIndex], ...fbSub };
+      }
+    });
+    
+    saveLocal(local);
+    renderSubmissions();
+    
+  }, (err) => {
+    console.error("[SYNC] ❌ Firebase error:", err);
+    console.log("[SYNC] 🔄 Falling back to Google Sheets...");
+    fetchFromGoogleSheets();
+  });
+}
+
+/* ============================================================ */
+/*  GOOGLE SHEETS FALLBACK                                      */
+/* ============================================================ */
+function fetchFromGoogleSheets() {
   const btnRefresh = document.getElementById("btnRefresh");
   if (btnRefresh) {
     btnRefresh.innerText = "🔄 Loading...";
@@ -580,18 +642,47 @@ function fetchAndMerge() {
   }
 
   fetch(WEB_APP_URL + "?action=getAll")
-    .then(r => r.json())
+    .then(async r => {
+      const text = await r.text();
+      console.log("[SHEETS] Response preview:", text.substring(0, 200));
+      
+      if (text.trim().startsWith('<')) {
+        throw new Error("Server returned HTML instead of JSON");
+      }
+      
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error("Invalid JSON response");
+      }
+      
+      return data;
+    })
     .then(data => {
-      if (!Array.isArray(data)) throw new Error("Invalid data");
+      if (data && data.error) {
+        throw new Error("Server error: " + data.error);
+      }
+      
+      let rows = data;
+      if (data && typeof data === 'object' && !Array.isArray(data)) {
+        rows = data.data || data.result || data.rows || [];
+      }
+      
+      if (!Array.isArray(rows)) {
+        throw new Error("Invalid data format");
+      }
+
+      console.log("[SHEETS] ✅ Rows received:", rows.length);
+
       const local = loadLocal();
       const existing = new Set(local.map(x => x.admissionNumber));
 
-      data.forEach(raw => {
+      rows.forEach(raw => {
         const admissionNumber = raw.AdmissionNumber || raw.admissionNumber || "";
         const status = raw.Status || raw.status || "Active";
 
-        // Skip deleted items from Google Sheets
-        if (status === "Deleted") return;
+        if (status === "Deleted" || !admissionNumber) return;
 
         if (!existing.has(admissionNumber)) {
           local.push({
@@ -617,8 +708,8 @@ function fetchAndMerge() {
       renderSubmissions();
     })
     .catch(err => {
-      console.warn("Fetch failed:", err);
-      renderSubmissions();
+      console.error("[SHEETS] ❌ Fetch failed:", err);
+      renderSubmissions(); // Show local data only
     })
     .finally(() => {
       if (btnRefresh) {
@@ -629,15 +720,13 @@ function fetchAndMerge() {
 }
 
 /* ============================================================ */
-/*  FIREBASE AUTH GUARD & LOGOUT - FIXED VERSION               */
+/*  FIREBASE AUTH GUARD & LOGOUT                                */
 /* ============================================================ */
-
 function initAuthGuard() {
   const authOverlay = document.getElementById("authChecking");
 
-  // Check if Firebase is available
   if (typeof firebase === 'undefined' || !firebase.auth) {
-    console.error("[AUTH] Firebase not loaded!");
+    console.error("[AUTH] ❌ Firebase not loaded!");
     if (authOverlay) {
       authOverlay.innerHTML = '<div style="color:#f44336;font-weight:600;">⚠️ Firebase failed to load. Please refresh.</div>';
     }
@@ -652,22 +741,27 @@ function initAuthGuard() {
       window.location.replace("Naz235.html");
     } else {
       if (authOverlay) authOverlay.classList.add("hidden");
+      // Start Firebase sync after successful auth
+      setupFirebaseSync();
     }
   });
 
-  // Fallback: if auth takes too long, check currentUser directly
   setTimeout(() => {
     const user = firebase.auth().currentUser;
     if (!user) {
       window.location.replace("Naz235.html");
     } else {
       if (authOverlay) authOverlay.classList.add("hidden");
+      setupFirebaseSync();
     }
   }, 3000);
 }
 
 function handleLogout() {
   if (!confirm("Are you sure you want to logout?")) return;
+
+  // Unsubscribe from Firebase listeners before logout
+  submissionsRef.off();
 
   firebase.auth().signOut().then(() => {
     localStorage.removeItem("ff_admin_session");
@@ -693,7 +787,20 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnClear) btnClear.addEventListener("click", clearAll);
 
   const btnRefresh = document.getElementById("btnRefresh");
-  if (btnRefresh) btnRefresh.addEventListener("click", fetchAndMerge);
+  if (btnRefresh) {
+    btnRefresh.addEventListener("click", () => {
+      btnRefresh.innerText = "🔄 Syncing...";
+      btnRefresh.disabled = true;
+      // Force Firebase re-sync
+      submissionsRef.once('value').then(() => {
+        btnRefresh.innerText = "🔄 Refresh";
+        btnRefresh.disabled = false;
+      }).catch(() => {
+        // Fallback to Sheets
+        fetchFromGoogleSheets();
+      });
+    });
+  }
 
   const btnClose = document.getElementById("btnClose");
   if (btnClose) btnClose.addEventListener("click", closeModal);
@@ -709,6 +816,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (searchInput) searchInput.addEventListener("input", filterSubmissions);
   if (btnClearSearch) btnClearSearch.addEventListener("click", clearSearch);
 
+  // Initial render (will be updated by Firebase sync)
   renderSubmissions();
-  fetchAndMerge();
 });
