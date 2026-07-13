@@ -4,6 +4,25 @@
 
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDQ6U8AePO5mwcLEwj1ZjCZyYGYD84KTA-6eqPNEXTpZe4GSe5MmjbQx1IPHQM80E/exec";
 
+// ============================================
+// FIREBASE CONFIG (Same as admin.js)
+// ============================================
+const firebaseConfig = {
+  apiKey: "AIzaSyAXTPxNngR3i6wwJv6kfNqJn6jrjKLQgHk",
+  authDomain: "fluent-future-academy.firebaseapp.com",
+  projectId: "fluent-future-academy",
+  storageBucket: "fluent-future-academy.firebasestorage.app",
+  messagingSenderId: "228748850828",
+  appId: "1:228748850828:web:06e285e99cdc1eca9f2da9",
+  databaseURL: "https://fluent-future-academy-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+const submissionsRef = db.ref('submissions');
+
 function getLastAdmissionNumber() {
   const raw = localStorage.getItem("lastAdmissionNumber");
   return raw ? parseInt(raw, 10) : 1000;
@@ -361,6 +380,19 @@ document.addEventListener("DOMContentLoaded", function () {
       grade: grade,
       message: message
     };
+
+    // ============================================
+    // 🔥 FIREBASE CLOUD SAVE (NEW!)
+    // ============================================
+    const safeKey = admissionNumber.replace(/[.#$[\]]/g, '_');
+    const firebaseData = {
+      ...sheetData,
+      timestamp: new Date().toISOString()
+    };
+    submissionsRef.child(safeKey).set(firebaseData)
+      .then(() => console.log("✅ Firebase: Saved", admissionNumber))
+      .catch(err => console.error("❌ Firebase save error:", err));
+    // ============================================
 
     fetch(WEB_APP_URL, {
       method: "POST",
