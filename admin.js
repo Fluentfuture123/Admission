@@ -598,30 +598,27 @@ function setupFirebaseSync() {
     const firebaseSubs = Object.entries(data).map(([key, value]) => ({
       ...value,
       firebaseKey: key
-    }));
+    })).filter(s => s.status !== "Deleted");
     
     console.log("[SYNC] ✅ Firebase submissions count:", firebaseSubs.length);
     
-    // Merge with local
+    // Merge with local - Firebase is the SOURCE OF TRUTH
     const local = loadLocal();
-    const existingKeys = new Set(local.map(x => x.admissionNumber));
+    const merged = [...local];
     
-    // Add new items from Firebase
-    firebaseSubs.forEach(s => {
-      if (s.status !== "Deleted" && !existingKeys.has(s.admissionNumber)) {
-        local.push(s);
-      }
-    });
-    
-    // Update existing items (status changes, etc.)
     firebaseSubs.forEach(fbSub => {
-      const localIndex = local.findIndex(x => x.admissionNumber === fbSub.admissionNumber);
-      if (localIndex !== -1) {
-        local[localIndex] = { ...local[localIndex], ...fbSub };
+      const existingIndex = merged.findIndex(x => x.admissionNumber === fbSub.admissionNumber);
+      if (existingIndex !== -1) {
+        merged[existingIndex] = fbSub; // Update existing
+      } else {
+        merged.push(fbSub); // Add new
       }
     });
     
-    saveLocal(local);
+    // Remove deleted items that might exist locally
+    const cleaned = merged.filter(s => s.status !== "Deleted");
+    
+    saveLocal(cleaned);
     renderSubmissions();
     
   }, (err) => {
